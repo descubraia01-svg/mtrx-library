@@ -6,3 +6,5 @@ Audios Base/
 WhatsApp Audio*
 WhatsApp Image*
 *.opus
+.vercel
+.env*

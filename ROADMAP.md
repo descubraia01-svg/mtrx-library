@@ -51,7 +51,16 @@ library.mtrx.com.br
 CNAME -> 15726c4eab95e25c.vercel-dns-017.com.
 ```
 
-Assim que o Registro.br liberar a edicao estavel de DNS, adicionar o CNAME acima.
+Subdominio reservado para o projeto 4rt1st4:
+
+```txt
+4rt1st4.mtrx.com.br
+CNAME -> cname.vercel-dns.com.
+```
+
+Assim que o Registro.br liberar a edicao estavel de DNS, adicionar os dois
+CNAMEs acima. O dominio raiz `mtrx.com.br` continua reservado para a landing
+page futura.
 
 ### UX para banco maior
 

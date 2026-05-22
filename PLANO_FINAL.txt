@@ -91,6 +91,17 @@ Tipo: CNAME
 Nome: library
 Valor: 15726c4eab95e25c.vercel-dns-017.com.
 
+Para o projeto 4rt1st4, reservar:
+4rt1st4.mtrx.com.br
+
+DNS previsto:
+Tipo: CNAME
+Nome: 4rt1st4
+Valor: cname.vercel-dns.com.
+
+Checklist operacional:
+DNS_REGISTRO_BR.txt
+
 Esse passo depende do Registro.br liberar/estabilizar a configuracao de DNS.
 
 
@@ -98,11 +109,12 @@ PROXIMOS PASSOS
 ----------------------------------------
 
 1. Finalizar DNS do subdominio library.mtrx.com.br
-2. Aumentar o banco de prompts por uso real
-3. Padronizar tags por ferramenta
-4. Criar historico de uso / prompts mais copiados
-5. Criar login admin real com Supabase Auth
-6. Preparar landing page futura no dominio mtrx.com.br
+2. Adicionar/reservar DNS do subdominio 4rt1st4.mtrx.com.br
+3. Aumentar o banco de prompts por uso real
+4. Padronizar tags por ferramenta
+5. Criar historico de uso / prompts mais copiados
+6. Criar login admin real com Supabase Auth
+7. Preparar landing page futura no dominio mtrx.com.br
 
 
 ARQUIVOS PRINCIPAIS
@@ -116,6 +128,7 @@ ROADMAP.md        -> fases e proximos passos
 ADMIN_GUIDE.md    -> guia do modo admin
 MELHORIAS.md      -> melhorias feitas e recomendadas
 DEPLOY.md         -> deploy, Vercel, Supabase e DNS
+DNS_REGISTRO_BR.txt -> checklist dos subdominios no Registro.br
 PROMPT_GUIDE.md   -> guia de uso para equipe criativa
 PLANO_FINAL.txt   -> este resumo
 

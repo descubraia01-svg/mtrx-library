@@ -105,6 +105,16 @@ library.mtrx.com.br
 CNAME -> 15726c4eab95e25c.vercel-dns-017.com.
 ```
 
+Tambem deixar reservado:
+
+```txt
+4rt1st4.mtrx.com.br
+CNAME -> cname.vercel-dns.com.
+```
+
+O arquivo `DNS_REGISTRO_BR.txt` contem o passo a passo limpo para executar no
+Registro.br sem tocar no dominio raiz.
+
 ---
 
 Atualizado em 22/05/2026 — MTRX LIBRARY v1.1

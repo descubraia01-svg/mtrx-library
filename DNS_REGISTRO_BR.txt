@@ -1,0 +1,95 @@
+MTRX — DNS REGISTRO.BR
+Atualizado em 22/05/2026
+========================================
+
+
+OBJETIVO
+----------------------------------------
+
+Configurar apenas subdominios no Registro.br.
+
+NAO alterar o dominio raiz:
+mtrx.com.br
+
+O dominio principal fica reservado para a landing page futura.
+
+
+SUBDOMINIOS
+----------------------------------------
+
+1. Biblioteca MTRX
+
+Subdominio:
+library.mtrx.com.br
+
+Registro no Registro.br:
+Tipo: CNAME
+Nome: library
+Valor: 15726c4eab95e25c.vercel-dns-017.com.
+
+Projeto Vercel:
+https://vercel.com/descubraia01-6342s-projects/mtrx-library
+
+Site atual:
+https://mtrx-library.vercel.app
+
+
+2. 4rt1st4
+
+Subdominio:
+4rt1st4.mtrx.com.br
+
+Registro no Registro.br:
+Tipo: CNAME
+Nome: 4rt1st4
+Valor: cname.vercel-dns.com.
+
+Observacao:
+Antes ou depois de adicionar o DNS, o subdominio tambem precisa ser adicionado
+no projeto correto da Vercel. Sem isso, o DNS aponta para a Vercel, mas a Vercel
+nao sabe qual projeto deve responder por 4rt1st4.mtrx.com.br.
+
+
+PASSO A PASSO NO REGISTRO.BR
+----------------------------------------
+
+1. Entrar em:
+https://registro.br/painel/dominios/?dominio=mtrx.com.br
+
+2. Abrir a area de DNS do dominio mtrx.com.br
+
+3. Adicionar o primeiro registro:
+Tipo: CNAME
+Nome: library
+Valor: 15726c4eab95e25c.vercel-dns-017.com.
+
+4. Adicionar o segundo registro:
+Tipo: CNAME
+Nome: 4rt1st4
+Valor: cname.vercel-dns.com.
+
+5. Salvar
+
+6. Aguardar propagacao
+
+
+VALIDACAO
+----------------------------------------
+
+Depois de salvar, validar:
+
+library.mtrx.com.br
+4rt1st4.mtrx.com.br
+
+Na Vercel, cada dominio deve aparecer como valido no projeto correspondente.
+
+
+IMPORTANTE
+----------------------------------------
+
+Nao criar A record para mtrx.com.br agora.
+Nao criar CNAME para @ agora.
+Nao apontar www agora, a menos que a landing page ja esteja pronta.
+
+========================================
+MTRX DNS — 22/05/2026

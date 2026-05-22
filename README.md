@@ -57,7 +57,15 @@ library.mtrx.com.br
 CNAME -> 15726c4eab95e25c.vercel-dns-017.com.
 ```
 
+Subdominio reservado para o projeto `4rt1st4`:
+
+```txt
+4rt1st4.mtrx.com.br
+CNAME -> cname.vercel-dns.com.
+```
+
 No momento, o DNS ainda depende da liberacao/propagacao no Registro.br.
+O checklist operacional esta em `DNS_REGISTRO_BR.txt`.
 
 ## Proxima melhoria direta
 

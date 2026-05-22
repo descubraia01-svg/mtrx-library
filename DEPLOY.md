@@ -72,6 +72,28 @@ Valor: 15726c4eab95e25c.vercel-dns-017.com.
 
 Quando o CNAME propagar, a Vercel valida o dominio automaticamente.
 
+### Subdominio 4rt1st4
+
+Reservado para o projeto/site `4rt1st4`.
+
+```txt
+4rt1st4.mtrx.com.br
+```
+
+Registro DNS previsto:
+
+```txt
+Tipo: CNAME
+Nome: 4rt1st4
+Valor: cname.vercel-dns.com.
+```
+
+Esse subdominio tambem precisa ser adicionado no projeto correto da Vercel.
+O DNS sozinho aponta para a Vercel, mas a Vercel so entrega o site quando o
+dominio esta cadastrado no projeto correspondente.
+
+Checklist completo salvo em `DNS_REGISTRO_BR.txt`.
+
 ## Links uteis
 
 - Novo projeto Vercel: https://vercel.com/new

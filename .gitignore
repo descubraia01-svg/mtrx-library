@@ -3,3 +3,6 @@
 *.bak
 *.bak2
 Audios Base/
+WhatsApp Audio*
+WhatsApp Image*
+*.opus

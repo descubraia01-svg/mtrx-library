@@ -113,22 +113,22 @@
   }
   #adminToggleBtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-  /* HERO */
+  /* APP INTRO */
   .hero {
-    padding: 72px 40px 38px; max-width: 1040px;
+    padding: 34px 40px 24px; max-width: 1040px;
     opacity: 0; transform: translateY(28px);
     animation: sup 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.6s;
   }
   @keyframes sup { to { opacity: 1; transform: translateY(0); } }
-  .hero-tag { font-size: 10px; font-weight: 700; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; margin-bottom: 22px; display: flex; align-items: center; gap: 12px; }
-  .hero-tag::before { content: ''; width: 28px; height: 1px; background: var(--accent); display: inline-block; }
-  .hero h1 { font-size: clamp(46px, 6.4vw, 78px); font-weight: 800; line-height: 1.04; margin-bottom: 28px; letter-spacing: 0; font-family: 'Syne', sans-serif; max-width: 920px; }
+  .hero-tag { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+  .hero-tag::before { content: ''; width: 24px; height: 1px; background: var(--accent); display: inline-block; }
+  .hero h1 { font-size: clamp(28px, 4vw, 46px); font-weight: 800; line-height: 1.08; margin-bottom: 12px; letter-spacing: 0; font-family: 'Syne', sans-serif; max-width: 760px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
-  .hero p { font-size: 16px; color: var(--text2); max-width: 500px; line-height: 1.85; font-weight: 400; letter-spacing: 0.01em; }
+  .hero p { font-size: 14px; color: var(--text2); max-width: 620px; line-height: 1.7; font-weight: 400; letter-spacing: 0.01em; }
 
   /* CONTROLS */
   .controls {
-    padding: 0 40px 24px; max-width: 1040px;
+    padding: 0 40px 18px; max-width: 1040px;
     display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
     opacity: 0; animation: fin 0.5s ease forwards 0.78s;
   }
@@ -153,9 +153,27 @@
   .filter-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg3); }
   .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
+  /* CATEGORY NAV */
+  .category-nav {
+    padding: 0 40px 22px; max-width: 1040px;
+    opacity: 0; animation: fin 0.5s ease forwards 0.82s;
+  }
+  .category-nav-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+  .nav-label { font-size: 10px; color: var(--text3); letter-spacing: 2.5px; text-transform: uppercase; font-weight: 700; }
+  .nav-hint { font-size: 11px; color: var(--text3); }
+  .category-nav-strip { display: flex; gap: 8px; flex-wrap: wrap; }
+  .category-nav-chip {
+    background: var(--bg2); border: 1px solid var(--border); color: var(--text2);
+    border-radius: var(--radius-sm); padding: 9px 14px; cursor: none;
+    font-size: 12px; font-weight: 700; font-family: var(--font);
+    display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+  }
+  .category-nav-chip:hover { border-color: var(--accent); color: var(--text); background: var(--bg3); transform: translateY(-1px); }
+  .category-nav-chip small { color: var(--text3); font-family: var(--mono); font-size: 10px; }
+
   /* LIBRARY INSIGHTS */
   .insights-panel {
-    padding: 0 40px 30px; max-width: 1040px;
+    padding: 0 40px 22px; max-width: 1040px;
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px; opacity: 0; animation: fin 0.5s ease forwards 0.86s;
   }
@@ -178,11 +196,19 @@
   /* TAG FILTER BAR */
   .tag-filter-bar {
     padding: 0 40px 20px; max-width: 1040px;
-    display: none; gap: 8px; flex-wrap: wrap; align-items: center;
+    display: none; gap: 10px; flex-direction: column; align-items: stretch;
   }
-  #tagChips { display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; }
+  .tag-filter-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  #tagChips { display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; max-height: 76px; overflow: hidden; position: relative; }
+  #tagChips.expanded { max-height: none; }
   .tag-filter-bar.visible { display: flex; }
   .tag-filter-label { font-size: 10px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-right: 4px; }
+  .tag-toggle {
+    background: transparent; border: 1px solid var(--border); color: var(--text3);
+    border-radius: 50px; padding: 5px 11px; font-size: 11px; cursor: none;
+    font-family: var(--font); font-weight: 700; transition: all 0.2s;
+  }
+  .tag-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .tag-chip {
     background: var(--bg2); border: 1px solid var(--border);
     color: var(--text3); padding: 4px 12px; border-radius: 50px;
@@ -410,7 +436,7 @@
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
-    .hero, .controls, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { max-width: none; }
+    .hero, .controls, .category-nav, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { max-width: none; }
     .insights-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     .category-header { align-items: flex-start; gap: 16px; }
@@ -424,24 +450,28 @@
     .logo { font-size: 14px; letter-spacing: 3px; max-width: calc(100vw - 150px); overflow-wrap: anywhere; }
     #adminToggleBtn { padding: 7px 12px; font-size: 11px; }
     .admin-badge { letter-spacing: 1px; padding: 4px 8px; }
-    .hero { padding: 42px 18px 24px; }
-    .hero-tag { letter-spacing: 2.4px; gap: 10px; margin-bottom: 16px; }
+    .hero { padding: 28px 18px 18px; }
+    .hero-tag { letter-spacing: 2.4px; gap: 10px; margin-bottom: 12px; }
     .hero-tag::before { width: 20px; }
-    .hero h1 { font-size: clamp(36px, 11vw, 52px); letter-spacing: 0; margin-bottom: 20px; }
-    .hero p { font-size: 14px; line-height: 1.75; max-width: 100%; }
-    .controls, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { padding-left: 18px; padding-right: 18px; }
+    .hero h1 { font-size: clamp(28px, 8vw, 38px); letter-spacing: 0; margin-bottom: 10px; }
+    .hero p { font-size: 13px; line-height: 1.65; max-width: 100%; }
+    .controls, .category-nav, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { padding-left: 18px; padding-right: 18px; }
     .controls { padding-bottom: 20px; align-items: stretch; }
     .search-wrap { flex-basis: 100%; min-width: 0; }
     .filter-btns { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; width: 100%; scrollbar-width: none; }
     .filter-btns::-webkit-scrollbar { display: none; }
     .filter-btn { flex: 0 0 auto; padding: 9px 14px; }
+    .category-nav { padding-bottom: 18px; }
+    .category-nav-head { margin-bottom: 8px; }
+    .nav-hint { display: none; }
+    .category-nav-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
+    .category-nav-strip::-webkit-scrollbar { display: none; }
+    .category-nav-chip { flex: 0 0 auto; }
     .insights-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-bottom: 24px; }
     .metric { min-height: 78px; padding: 12px; }
     .metric span { letter-spacing: 1.4px; }
     .result-summary { padding-bottom: 14px; }
-    .tag-filter-bar { flex-wrap: nowrap; overflow-x: auto; align-items: center; padding-bottom: 18px; scrollbar-width: none; }
-    .tag-filter-bar::-webkit-scrollbar { display: none; }
-    #tagChips { flex-wrap: nowrap; }
+    #tagChips { max-height: 78px; }
     .tag-chip, .featured-chip, .combo-chip { flex: 0 0 auto; }
     .featured-strip, .combos-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
     .featured-strip::-webkit-scrollbar, .combos-strip::-webkit-scrollbar { display: none; }
@@ -509,9 +539,9 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-tag">Creative Prompt Database</div>
-  <h1>Liberdade de criar.<br><em>Sem bloqueio criativo.</em></h1>
-  <p>Um repositório vivo de prompts para imagem, áudio e vídeo. Acesse os comandos certos na hora certa — e nunca mais fique parado sem ideia.</p>
+  <div class="hero-tag">Banco de prompts</div>
+  <h1>MTRX Library <em>operacional.</em></h1>
+  <p>Base interna para encontrar, copiar e organizar prompts por categoria. Sem apresentacao longa: busca, filtro e uso direto.</p>
 </section>
 
 <!-- CONTROLS -->
@@ -530,6 +560,15 @@
     <button class="filter-btn" onclick="setFilter('featured',this)">⭐ Curadoria</button>
   </div>
 </div>
+
+<!-- CATEGORY NAV -->
+<section class="category-nav" aria-label="Navegacao por categorias">
+  <div class="category-nav-head">
+    <span class="nav-label">Categorias</span>
+    <span class="nav-hint">Use como indice rapido do banco</span>
+  </div>
+  <div class="category-nav-strip" id="categoryNav"></div>
+</section>
 
 <!-- INSIGHTS -->
 <section class="insights-panel" aria-label="Resumo da biblioteca">
@@ -554,7 +593,10 @@
 
 <!-- TAG FILTER BAR -->
 <div class="tag-filter-bar" id="tagFilterBar">
-  <span class="tag-filter-label">Tags:</span>
+  <div class="tag-filter-top">
+    <span class="tag-filter-label">Tags</span>
+    <button class="tag-toggle" id="tagToggleBtn" onclick="toggleTags()">Ver todas</button>
+  </div>
   <div id="tagChips"></div>
 </div>
 
@@ -935,6 +977,7 @@ let editingPromptRef = null;
 let deletedPromptCache = null;
 let undoTimerInterval = null;
 let currentComboId = null;
+let tagsExpanded = false;
 
 function loadDB() {
   const s = localStorage.getItem('mtrx_db');
@@ -1077,6 +1120,11 @@ function setTag(tag) {
   renderAll();
 }
 
+function toggleTags() {
+  tagsExpanded = !tagsExpanded;
+  renderTagChips();
+}
+
 // ── TAGS ──
 function getAllTags() {
   const tags = new Set();
@@ -1160,16 +1208,29 @@ function renderStats() {
 function renderTagChips() {
   const bar = document.getElementById('tagFilterBar');
   const chips = document.getElementById('tagChips');
+  const toggle = document.getElementById('tagToggleBtn');
   const tags = getAllTags();
   if (!tags.length) { bar.classList.remove('visible'); return; }
   bar.classList.add('visible');
+  chips.classList.toggle('expanded', tagsExpanded);
+  toggle.textContent = tagsExpanded ? 'Recolher' : 'Ver todas';
   chips.innerHTML = tags.map(t =>
     `<button class="tag-chip ${activeTag===t?'active':''}" onclick="setTag('${escapeHTML(t)}')">${escapeHTML(t)}</button>`
   ).join('');
 }
 
 // ── RENDER ──
-function renderAll() { renderStats(); renderFeatured(); renderCombos(); renderTagChips(); renderCategories(); }
+function renderAll() { renderStats(); renderCategoryNav(); renderFeatured(); renderCombos(); renderTagChips(); renderCategories(); }
+
+function renderCategoryNav() {
+  const nav = document.getElementById('categoryNav');
+  const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  nav.innerHTML = db.categories.map(cat => {
+    const count = cat.subcategories.reduce((acc, sub) =>
+      acc + sub.prompts.filter(p => promptMatches(p, cat, search)).length, 0);
+    return `<button class="category-nav-chip" onclick="jumpToCategory('${escapeHTML(cat.id)}')">${escapeHTML(cat.icon)} ${escapeHTML(cat.name)} <small>${count}</small></button>`;
+  }).join('');
+}
 
 function renderFeatured() {
   const strip = document.getElementById('featuredStrip');
@@ -1218,7 +1279,7 @@ function renderCategories() {
       </div>`;
     });
     if (!catHtml) return;
-    html += `<div class="category-block">
+    html += `<div class="category-block" id="cat_${escapeHTML(cat.id)}">
       <div class="category-header">
         <div class="category-title">
           <div class="cat-icon ${cat.type}">${cat.icon}</div>
@@ -1497,6 +1558,16 @@ function scrollToPrompt(id) {
   el.style.borderColor = 'var(--accent)';
   el.style.boxShadow = '0 0 0 2px rgba(255,69,0,0.18)';
   setTimeout(() => { el.style.borderColor=''; el.style.boxShadow=''; }, 1600);
+}
+
+function jumpToCategory(id) {
+  const btn = document.querySelector(`.filter-btn[onclick*="'${id}'"]`);
+  if (btn) {
+    setFilter(id, btn);
+    setTimeout(() => document.getElementById('cat_'+id)?.scrollIntoView({behavior:'smooth', block:'start'}), 80);
+    return;
+  }
+  document.getElementById('cat_'+id)?.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // ── MODALS ──

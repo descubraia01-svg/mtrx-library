@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTRX LIBRARY — Banco de Prompts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --border: #222222;
+    --border-hover: #333333;
+    --accent: #FF4500;
+    --accent2: #FF6B35;
+    --accent-dim: rgba(255,69,0,0.08);
+    --text: #f0f0f0;
+    --text2: #888888;
+    --text3: #555555;
+    --red: #ff4444;
+    --green: #44ff88;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font: 'Syne', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    line-height: 1.6;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  #cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: width 0.18s ease, height 0.18s ease, background 0.18s ease;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid rgba(255,69,0,0.45);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s cubic-bezier(0.25,0.46,0.45,0.94),
+                height 0.3s cubic-bezier(0.25,0.46,0.45,0.94),
+                border-color 0.2s;
+  }
+  body.cur-hover #cursor { width: 6px; height: 6px; background: #fff; }
+  body.cur-hover #cursor-ring { width: 50px; height: 50px; border-color: var(--accent); }
+  body.cur-copy #cursor { width: 8px; height: 8px; background: var(--accent2); }
+  body.cur-copy #cursor-ring { width: 42px; height: 42px; border-color: var(--accent2); }
+
+  /* LOADER */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 99000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 28px;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .ld-logo {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .ld-logo span { opacity: 0; transform: translateY(16px); animation: lchar 0.35s ease forwards; }
+  .ld-logo .c1 { color: var(--accent); animation-delay: 0.15s; }
+  .ld-logo .c2 { color: #fff; animation-delay: 0.28s; }
+  .ld-logo .c3 { color: #fff; animation-delay: 0.38s; }
+  .ld-logo .c4 { color: var(--accent); animation-delay: 0.48s; }
+  .ld-logo .c5 { color: #2a2a2a; animation-delay: 0.58s; font-size: 20px; }
+  .ld-logo .c6 { color: #555; animation-delay: 0.68s; font-size: 14px; letter-spacing: 8px; }
+  @keyframes lchar { to { opacity: 1; transform: translateY(0); } }
+
+  .ld-bar-wrap {
+    width: 180px; height: 1px;
+    background: #1a1a1a;
+    overflow: hidden;
+    opacity: 0;
+    animation: fin 0.3s ease forwards 0.85s;
+  }
+  .ld-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    animation: lbar 1.1s cubic-bezier(0.4,0,0.2,1) forwards 0.9s;
+  }
+  @keyframes lbar { to { width: 100%; } }
+  @keyframes fin { to { opacity: 1; } }
+
+  .ld-sub {
+    font-size: 10px; letter-spacing: 4px; color: #2a2a2a;
+    text-transform: uppercase;
+    opacity: 0; animation: fin 0.4s ease forwards 0.95s;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0;
+    background: rgba(10,10,10,0.93);
+    backdrop-filter: blur(16px);
+    z-index: 100;
+    opacity: 0; transform: translateY(-10px);
+    animation: sdown 0.5s ease forwards 2.1s;
+  }
+  @keyframes sdown { to { opacity: 1; transform: translateY(0); } }
+
+  .logo {
+    font-size: 17px; font-weight: 800;
+    letter-spacing: 5px; font-family: var(--mono);
+    display: flex; align-items: center;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .admin-badge {
+    display: none; background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    padding: 4px 10px; border-radius: 4px;
+  }
+  .admin-badge.visible { display: block; }
+  #adminToggleBtn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text3); padding: 7px 16px;
+    border-radius: var(--radius-sm); font-size: 12px;
+    cursor: none; transition: all 0.22s; letter-spacing: 1px;
+    font-family: var(--font); font-weight: 600;
+  }
+  #adminToggleBtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* HERO */
+  .hero {
+    padding: 88px 40px 52px;
+    max-width: 960px;
+    opacity: 0; transform: translateY(28px);
+    animation: sup 0.7s cubic-bezier(0.16,1,0.3,1) forwards 2.4s;
+  }
+  @keyframes sup { to { opacity: 1; transform: translateY(0); } }
+
+  .hero-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 4px;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 22px; display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; width: 28px; height: 1px;
+    background: var(--accent); display: inline-block;
+  }
+  .hero h1 {
+    font-size: clamp(52px, 8vw, 92px);
+    font-weight: 800; line-height: 1.04;
+    margin-bottom: 28px; letter-spacing: -3px;
+    font-family: 'Syne', sans-serif;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p {
+    font-size: 16px; color: var(--text2);
+    max-width: 500px; line-height: 1.85;
+    font-weight: 400; letter-spacing: 0.01em;
+  }
+
+  /* CONTROLS */
+  .controls {
+    padding: 0 40px 36px; max-width: 960px;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    opacity: 0; animation: fin 0.5s ease forwards 2.7s;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap svg {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%); color: var(--text3); pointer-events: none;
+  }
+  #searchInput {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); padding: 11px 14px 11px 42px;
+    border-radius: var(--radius-sm); font-size: 14px;
+    outline: none; transition: border-color 0.22s, background 0.22s;
+    font-family: var(--font); cursor: none;
+  }
+  #searchInput:focus { border-color: var(--accent); background: #131313; }
+  #searchInput::placeholder { color: var(--text3); }
+
+  .filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text2); padding: 9px 18px;
+    border-radius: var(--radius-sm); font-size: 13px;
+    cursor: none; transition: all 0.22s; letter-spacing: 0.5px;
+    font-family: var(--font); font-weight: 600;
+  }
+  .filter-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg3); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* FEATURED */
+  .featured-section {
+    padding: 0 40px 36px; max-width: 960px;
+    opacity: 0; animation: fin 0.5s ease forwards 2.8s;
+  }
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 4px;
+    color: var(--text3); text-transform: uppercase;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .featured-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+  .featured-chip {
+    background: var(--accent-dim); border: 1px solid rgba(255,69,0,0.2);
+    color: var(--accent); padding: 6px 16px; border-radius: 50px;
+    font-size: 12px; font-weight: 600; cursor: none;
+    transition: all 0.22s; letter-spacing: 0.3px;
+  }
+  .featured-chip:hover { background: rgba(255,69,0,0.14); border-color: var(--accent); transform: translateY(-1px); }
+
+  /* MAIN */
+  .main-content {
+    padding: 0 40px 100px; max-width: 960px;
+    opacity: 0; animation: fin 0.5s ease forwards 2.9s;
+  }
+  .category-block { margin-bottom: 60px; }
+  .category-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .category-title { display: flex; align-items: center; gap: 14px; }
+  .cat-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .cat-icon.img { background: rgba(124,58,237,0.1); }
+  .cat-icon.aud { background: rgba(8,145,178,0.1); }
+  .cat-name { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .cat-count { font-size: 11px; color: var(--text3); margin-top: 2px; letter-spacing: 1px; }
+  .btn-add-cat {
+    display: none; background: var(--bg2); border: 1px dashed var(--border);
+    color: var(--text3); padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 12px; cursor: none; transition: all 0.2s; gap: 6px;
+    align-items: center; font-family: var(--font);
+  }
+  .btn-add-cat:hover { border-color: var(--accent); color: var(--accent); }
+
+  .subcategory { margin-bottom: 32px; }
+  .sub-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .sub-name { font-size: 10px; font-weight: 700; letter-spacing: 3.5px; color: var(--text3); text-transform: uppercase; }
+  .btn-add-sub {
+    display: none; background: transparent; border: none;
+    color: var(--text3); font-size: 12px; cursor: none;
+    padding: 4px 8px; border-radius: 4px; transition: all 0.2s;
+    gap: 4px; align-items: center; font-family: var(--font);
+  }
+  .btn-add-sub:hover { color: var(--accent); background: var(--accent-dim); }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+  }
+  .prompt-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px;
+    position: relative; cursor: none;
+    transition: border-color 0.25s, background 0.25s,
+                transform 0.32s cubic-bezier(0.16,1,0.3,1),
+                box-shadow 0.32s ease;
+    will-change: transform;
+  }
+  .prompt-card:hover {
+    border-color: #2e2e2e; background: var(--bg3);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,69,0,0.05);
+  }
+  .prompt-card.featured {
+    border-color: rgba(255,69,0,0.22);
+    background: linear-gradient(140deg, var(--bg3) 0%, rgba(255,69,0,0.025) 100%);
+  }
+  .prompt-card.featured:hover {
+    border-color: rgba(255,69,0,0.45);
+    box-shadow: 0 16px 48px rgba(255,69,0,0.07), 0 0 0 1px rgba(255,69,0,0.08);
+  }
+  .prompt-card.copy-flash {
+    border-color: var(--accent) !important;
+    background: rgba(255,69,0,0.05) !important;
+    transform: translateY(-4px) !important;
+  }
+
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .card-title { font-size: 15px; font-weight: 700; line-height: 1.35; flex: 1; padding-right: 8px; letter-spacing: -0.2px; }
+  .card-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+  .btn-fav, .btn-edit, .btn-delete, .btn-copy {
+    background: transparent; border: none; cursor: none;
+    padding: 5px; border-radius: 5px; transition: all 0.18s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1;
+  }
+  .btn-fav { color: var(--text3); }
+  .btn-fav:hover { color: var(--accent); transform: scale(1.25); }
+  .btn-fav.active { color: var(--accent); }
+  .btn-copy { color: var(--text3); }
+  .btn-copy:hover { color: var(--accent2); transform: scale(1.12); }
+  .btn-edit { color: var(--text3); display: none; }
+  .btn-edit:hover { color: var(--accent); }
+  .btn-delete { color: var(--text3); display: none; }
+  .btn-delete:hover { color: var(--red); }
+
+  .card-desc { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 12px; font-weight: 400; }
+  .card-prompt {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 13px;
+    font-size: 11.5px; font-family: var(--mono);
+    color: var(--accent2); line-height: 1.55;
+    word-break: break-word; cursor: none;
+    transition: border-color 0.22s, background 0.22s;
+    position: relative; overflow: hidden;
+  }
+  .card-prompt:hover { border-color: rgba(255,107,53,0.5); background: #0c0c0c; }
+
+  .prompt-copied-msg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,69,0,0.94); color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+    font-family: var(--font); pointer-events: none;
+    opacity: 0; transition: opacity 0.15s ease; border-radius: 7px;
+  }
+
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; }
+  .tag.img { background: rgba(124,58,237,0.1); color: #a78bfa; }
+  .tag.aud { background: rgba(8,145,178,0.1); color: #67e8f9; }
+  .tag.featured-tag { background: rgba(255,69,0,0.1); color: var(--accent); }
+
+  /* ADMIN PANEL */
+  #adminPanel {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(8,8,8,0.98); border-top: 1px solid var(--accent);
+    padding: 14px 40px; z-index: 200; backdrop-filter: blur(20px);
+  }
+  #adminPanel.visible { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .admin-info { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 2.5px; flex: 1; }
+  .btn-exit-admin {
+    background: transparent; border: 1px solid var(--red); color: var(--red);
+    padding: 7px 16px; border-radius: 6px; font-size: 12px; cursor: none;
+    transition: all 0.2s; font-family: var(--font); font-weight: 600;
+  }
+  .btn-exit-admin:hover { background: var(--red); color: #fff; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.9); z-index: 300;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: #111; border: 1px solid #222;
+    border-radius: 16px; padding: 36px; width: 90%; max-width: 480px;
+    animation: min 0.28s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes min { from { opacity: 0; transform: scale(0.94) translateY(14px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal h2 { font-size: 22px; font-weight: 800; margin-bottom: 28px; letter-spacing: -0.5px; }
+  .modal h2 em { font-style: normal; color: var(--accent); }
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block; font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; color: var(--text3); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%; background: #0d0d0d; border: 1px solid var(--border);
+    color: var(--text); padding: 11px 14px; border-radius: var(--radius-sm);
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+    font-family: var(--font); cursor: none;
+  }
+  .form-group textarea { min-height: 80px; resize: vertical; }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--accent); }
+  .form-group select option { background: #111; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
+  .btn-cancel {
+    background: transparent; border: 1px solid var(--border); color: var(--text2);
+    padding: 11px 22px; border-radius: var(--radius-sm); font-size: 14px;
+    cursor: none; transition: all 0.2s; font-family: var(--font);
+  }
+  .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
+  .btn-save {
+    background: var(--accent); border: none; color: #fff;
+    padding: 11px 26px; border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700; cursor: none;
+    transition: all 0.2s; font-family: var(--font);
+  }
+  .btn-save:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  /* PW MODAL */
+  #pwModal .modal { max-width: 380px; text-align: center; }
+  #pwModal .modal h2 { font-size: 14px; color: var(--text2); margin-bottom: 24px; font-weight: 600; letter-spacing: 1px; }
+  #pwInput {
+    width: 100%; background: #0d0d0d; border: 1px solid var(--border); color: var(--text);
+    padding: 14px 16px; border-radius: var(--radius-sm); font-size: 22px;
+    text-align: center; letter-spacing: 6px; outline: none;
+    font-family: var(--mono); margin-bottom: 16px; transition: border-color 0.2s; cursor: none;
+  }
+  #pwInput:focus { border-color: var(--accent); }
+  #pwError { color: var(--red); font-size: 12px; min-height: 20px; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .btn-unlock {
+    width: 100%; background: var(--accent); border: none; color: #fff;
+    padding: 13px; border-radius: var(--radius-sm); font-size: 14px;
+    font-weight: 700; cursor: none; transition: all 0.2s;
+    font-family: var(--font); letter-spacing: 1px;
+  }
+  .btn-unlock:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 72px 24px; color: var(--text3); }
+  .empty-state svg { margin-bottom: 16px; opacity: 0.2; }
+  .empty-state p { font-size: 14px; line-height: 1.9; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 88px; right: 32px;
+    background: #181818; border: 1px solid var(--border); color: var(--text);
+    padding: 12px 20px; border-radius: var(--radius-sm);
+    font-size: 13px; z-index: 999; opacity: 0;
+    transform: translateY(10px) scale(0.97);
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    pointer-events: none; font-family: var(--font); font-weight: 500;
+  }
+  #toast.show { opacity: 1; transform: translateY(0) scale(1); }
+  #toast.success { border-color: var(--green); color: var(--green); }
+  #toast.error { border-color: var(--red); color: var(--red); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    body { cursor: auto; }
+    #cursor, #cursor-ring { display: none; }
+    header { padding: 16px 20px; }
+    .hero { padding: 48px 20px 28px; }
+    .hero h1 { font-size: clamp(38px, 10vw, 58px); letter-spacing: -1.5px; }
+    .controls { padding: 0 20px 24px; }
+    .featured-section, .main-content { padding-left: 20px; padding-right: 20px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    #adminPanel.visible { padding: 12px 20px; }
+  }
+
+  /* ADMIN REVEALS */
+  body.admin-mode .btn-edit { display: flex !important; }
+  body.admin-mode .btn-delete { display: flex !important; }
+  body.admin-mode .btn-add-cat { display: flex !important; }
+  body.admin-mode .btn-add-sub { display: flex !important; }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-logo">
+    <span class="c1">M</span><span class="c2">T</span><span class="c3">R</span><span class="c4">X</span><span class="c5">&nbsp;_&nbsp;</span><span class="c6">LIBRARY</span>
+  </div>
+  <div class="ld-bar-wrap"><div class="ld-bar"></div></div>
+  <div class="ld-sub">Creative Prompt Database</div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span style="color:#FF4500">M</span><span style="color:#fff">TR</span><span style="color:#FF4500">X</span><span style="color:#2a2a2a">_</span><span style="color:#fff">LIBRARY</span>
+  </div>
+  <div class="header-right">
+    <span class="admin-badge" id="adminBadge">● ADMIN</span>
+    <button id="adminToggleBtn" onclick="openPasswordModal()">⚿ Admin</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Creative Prompt Database</div>
+  <h1>Liberdade de criar.<br><em>Sem bloqueio criativo.</em></h1>
+  <p>Um repositório vivo de prompts para imagem e áudio. Acesse os comandos certos na hora certa — e nunca mais fique parado sem ideia.</p>
+</section>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Buscar prompts..." oninput="renderAll()">
+  </div>
+  <div class="filter-btns">
+    <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('image',this)">🖼 Imagem</button>
+    <button class="filter-btn" onclick="setFilter('audio',this)">🎵 Áudio</button>
+    <button class="filter-btn" onclick="setFilter('featured',this)">⭐ Curadoria</button>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<div class="featured-section" id="featuredSection">
+  <div class="section-label">⭐ Curadoria do Time</div>
+  <div class="featured-strip" id="featuredStrip"></div>
+</div>
+
+<!-- MAIN -->
+<main class="main-content" id="mainContent"></main>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+  <div class="admin-info">⚡ MODO ADMIN ATIVO — Adicione, edite e delete prompts</div>
+  <button class="btn-exit-admin" onclick="exitAdmin()">Sair do Admin</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- PW MODAL -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal">
+    <h2>🔐 Acesso Administrativo</h2>
+    <input type="password" id="pwInput" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div id="pwError"></div>
+    <button class="btn-unlock" onclick="checkPassword()">Desbloquear</button>
+    <br><br>
+    <button class="btn-cancel" onclick="closeModal('pwModal')" style="width:100%">Cancelar</button>
+  </div>
+</div>
+
+<!-- PROMPT MODAL -->
+<div class="modal-overlay" id="promptModal">
+  <div class="modal">
+    <h2 id="promptModalTitle">Adicionar <em>Prompt</em></h2>
+    <div class="form-group">
+      <label>Categoria</label>
+      <select id="formCategory">
+        <option value="image">🖼 Imagem</option>
+        <option value="audio">🎵 Áudio</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Subcategoria</label>
+      <input type="text" id="formSubcategory" placeholder="Ex: Ângulos de Câmera, Gêneros Musicais...">
+    </div>
+    <div class="form-group">
+      <label>Nome do Prompt</label>
+      <input type="text" id="formTitle" placeholder="Ex: Close-up, Sertanejo, Voz Grossa...">
+    </div>
+    <div class="form-group">
+      <label>Descrição</label>
+      <textarea id="formDesc" placeholder="O que este prompt faz? Qual o impacto criativo?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Prompt (texto copiável)</label>
+      <textarea id="formPrompt" placeholder="O texto exato do prompt para copiar e usar na IA..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('promptModal')">Cancelar</button>
+      <button class="btn-save" onclick="savePrompt()">Salvar Prompt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
+(function animRing() {
+  rx += (mx - rx) * 0.11; ry += (my - ry) * 0.11;
+  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+document.addEventListener('mouseover', e => {
+  const el = e.target.closest('button,a,.filter-btn,.featured-chip,.prompt-card,input,select,textarea');
+  if (!el) return;
+  if (el.classList.contains('card-prompt') || el.classList.contains('btn-copy') || el.classList.contains('prompt-card')) {
+    document.body.className = document.body.className.replace(/cur-\w+/g,'').trim() + ' cur-copy';
+  } else {
+    document.body.className = document.body.className.replace(/cur-\w+/g,'').trim() + ' cur-hover';
+  }
+});
+document.addEventListener('mouseout', e => {
+  const el = e.target.closest('button,a,.filter-btn,.featured-chip,.prompt-card,input,select,textarea');
+  if (el) document.body.className = document.body.className.replace(/cur-\w+/g,'').trim();
+});
+
+// ── LOADER ──
+window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('hidden'), 2050));
+
+// ── ADMIN ──
+const ADMIN_CODE = 'mtrx2024';
+
+// ── DATA ──
+const DEFAULT_DATA = {categories:[
+  {id:'image',name:'Prompts de Imagem',type:'image',icon:'🖼',subcategories:[
+    {id:'sub_angles',name:'Ângulos de Câmera',prompts:[
+      {id:'p1',title:'Close-up',desc:'Visão de perto. Enfatiza emoção, detalhes faciais e textura. Cria conexão imediata com o sujeito.',prompt:"close-up shot, macro detail, facial focus, sharp eyes, 8k resolution, bokeh background",featured:true},
+      {id:'p2',title:'Wide Shot',desc:'Visão aberta. Mostra o ambiente completo e posiciona o sujeito no cenário.',prompt:"wide angle shot, establishing shot, full environment visible, cinematic composition",featured:false},
+      {id:'p3',title:"Bird's Eye View",desc:'Vista de cima. Ângulo aéreo que transmite grandiosidade e perspectiva única.',prompt:"bird's eye view, aerial perspective, top-down shot, overhead angle, dramatic composition",featured:false},
+      {id:'p4',title:'Low Angle',desc:'Câmera de baixo para cima. Transmite poder, autoridade e imponência do sujeito.',prompt:"low angle shot, worm's eye view, looking up, powerful perspective, dramatic hero angle",featured:false},
+      {id:'p5',title:'Portrait Close-up',desc:'Close focado no rosto. Ideal para redes sociais, capas e artes de artistas.',prompt:"portrait close-up, face detail, intense gaze, studio lighting, sharp focus, professional photography",featured:true}
+    ]},
+    {id:'sub_ambience',name:'Ambientação',prompts:[
+      {id:'p6',title:'Cinematic Lighting',desc:'Iluminação cinematográfica. Cria profundidade, drama e estética de filme.',prompt:"cinematic lighting, dramatic shadows, volumetric light rays, film grain, anamorphic lens flare",featured:true},
+      {id:'p7',title:'Neon Cyberpunk',desc:'Ambiente urbano futurista com luzes neon. Estética vibrante e moderna.',prompt:"neon cyberpunk atmosphere, purple and cyan lights, rainy streets, reflections, futuristic city, blade runner aesthetic",featured:false},
+      {id:'p8',title:'Stage Smoke & Lights',desc:'Palco com fumaça e luzes de show. Perfeito para artistas e performances.',prompt:"concert stage atmosphere, smoke machine effect, blue stage lights, spotlight, silhouette of crowd, live show energy",featured:true},
+      {id:'p9',title:'Golden Hour',desc:'Luz dourada do fim de tarde. Cria calor, nostalgia e beleza natural.',prompt:"golden hour lighting, warm sunset tones, soft natural light, lens flare, outdoor setting, magic hour",featured:false},
+      {id:'p10',title:'Studio Dark Background',desc:'Fundo escuro de estúdio. Destaca o sujeito com elegância e foco total.',prompt:"dark studio background, professional photography, single subject focus, dramatic key light, black backdrop",featured:false}
+    ]},
+    {id:'sub_subjects',name:'Sujeitos & Composição',prompts:[
+      {id:'p11',title:'Cantor com Microfone',desc:'Sujeito padrão para conteúdo musical. Âncora visual para qualquer cena de performance.',prompt:"singer holding a microphone, performing on stage, intense expression, sweat details, professional artist, music performance",featured:true},
+      {id:'p12',title:'DJ Behind Decks',desc:'DJ atrás dos equipamentos. Ideal para conteúdo de shows e eventos eletrônicos.',prompt:"DJ behind decks, turntables, mixing equipment, club lighting, hands on mixer, crowd in background",featured:false},
+      {id:'p13',title:'Artista Solo',desc:'Artista sozinho em foco total. Transmite protagonismo e identidade visual forte.',prompt:"solo artist portrait, strong presence, direct camera gaze, confident posture, professional lighting, iconic shot",featured:false}
+    ]}
+  ]},
+  {id:'audio',name:'Prompts de Áudio',type:'audio',icon:'🎵',subcategories:[
+    {id:'sub_genres',name:'Gêneros Musicais',prompts:[
+      {id:'p20',title:'Sertanejo',desc:'Gênero brasileiro com violão, acordeão e voz melódica. Combina tradição e apelo emocional.',prompt:"sertanejo style, acoustic guitar (violão), accordion rhythm, melodic Brazilian vocals, countryside soul, emotional lyrics",featured:true},
+      {id:'p21',title:'Sertanejo Universitário',desc:'Versão pop do sertanejo. Mais dançante, produção moderna, apelo jovem.',prompt:"sertanejo universitário, modern Brazilian country pop, upbeat rhythm, electric guitar, party vibes, youthful energy",featured:false},
+      {id:'p22',title:'Funk Brasileiro',desc:'Batida eletrônica característica. Energia alta, bass pesado, apelo urbano.',prompt:"Brazilian funk, heavy bass beat, 150 BPM, urban energy, Rio de Janeiro style, electronic beats, party atmosphere",featured:false},
+      {id:'p23',title:'Pagode',desc:'Ritmo brasileiro de raiz com pandeiro, cavaquinho e voz envolvente. Alegria e swing.',prompt:"pagode style, pandeiro percussion, cavaquinho guitar, samba rhythm, joyful Brazilian mood, group vocals",featured:false},
+      {id:'p24',title:'Trap BR',desc:'Trap com influência brasileira. Beats pesados, hi-hats rápidos e flow em português.',prompt:"Brazilian trap, heavy 808 bass, fast hi-hats, dark atmospheric beat, Portuguese rap flow, street energy",featured:false}
+    ]},
+    {id:'sub_vocals',name:'Modulação Vocal',prompts:[
+      {id:'p30',title:'Voz Grossa',desc:'Voz grave com autoridade. Adiciona peso, maturidade e presença ao vocal.',prompt:"deep voice, voz grossa, high bass resonance, authoritative tone, mature masculine voice, powerful delivery",featured:true},
+      {id:'p31',title:'Voz Suave & Melancólica',desc:'Voz delicada com emoção contida. Para baladas e músicas introspectivas.',prompt:"soft melancholic voice, gentle delivery, emotional vulnerability, breathy tone, heartbreak vibes, tender expression",featured:false},
+      {id:'p32',title:'Voz de Narrador',desc:'Voz clara e assertiva. Ideal para voice-overs, intros e locuções.',prompt:"narrator voice, clear articulation, deep authoritative tone, professional voice over, confident delivery, radio quality",featured:false},
+      {id:'p33',title:'Voz Aguda & Energética',desc:'Voz alta e vibrante. Transmite energia, alegria e dinamismo.',prompt:"high energy voice, bright and vibrant tone, upbeat delivery, youthful spirit, powerful projection, excitement",featured:false},
+      {id:'p34',title:'Coral / Vozes em Camadas',desc:'Múltiplas vozes sobrepostas. Cria profundidade e grandiosidade na produção.',prompt:"choir vocals, layered harmonies, multiple voices, epic choir effect, background vocal support, rich texture",featured:false}
+    ]},
+    {id:'sub_mood',name:'Mood & Atmosfera',prompts:[
+      {id:'p40',title:'Melancólico & Sad',desc:'Atmosfera de tristeza e reflexão. Para músicas que tocam fundo.',prompt:"melancholic mood, sad atmosphere, emotional depth, minor key, slow tempo, heartbreak energy, nostalgic feeling",featured:false},
+      {id:'p41',title:'Festivo & Animado',desc:'Energia de festa e celebração. Para músicas que fazem dançar.',prompt:"festive party energy, upbeat mood, celebration vibes, dance floor ready, high BPM, crowd pleaser",featured:false},
+      {id:'p42',title:'Romântico & Sensual',desc:'Clima íntimo e sedutor. Para músicas de amor e conexão emocional.',prompt:"romantic mood, sensual atmosphere, intimate setting, smooth rhythm, love song energy, tender emotion",featured:false}
+    ]}
+  ]}
+]};
+
+// ── STATE ──
+let db = loadDB();
+let isAdmin = localStorage.getItem('mtrx_admin') === 'true';
+let currentFilter = 'all';
+let editingPromptRef = null;
+
+function loadDB() {
+  const s = localStorage.getItem('mtrx_db');
+  if (s) try { return JSON.parse(s); } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+function saveDB() { localStorage.setItem('mtrx_db', JSON.stringify(db)); }
+function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+// ── ADMIN ──
+function openPasswordModal() {
+  if (isAdmin) { exitAdmin(); return; }
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').textContent = '';
+  openModal('pwModal');
+  setTimeout(() => document.getElementById('pwInput').focus(), 100);
+}
+function checkPassword() {
+  const v = document.getElementById('pwInput').value;
+  if (v === ADMIN_CODE) {
+    isAdmin = true; localStorage.setItem('mtrx_admin','true');
+    closeModal('pwModal'); activateAdmin(); toast('Modo Admin ativado ⚡','success');
+  } else {
+    document.getElementById('pwError').textContent = 'Código incorreto. Tente novamente.';
+    document.getElementById('pwInput').value = ''; document.getElementById('pwInput').focus();
+  }
+}
+function activateAdmin() {
+  document.body.classList.add('admin-mode');
+  document.getElementById('adminBadge').classList.add('visible');
+  document.getElementById('adminPanel').classList.add('visible');
+  document.getElementById('adminToggleBtn').textContent = '⚿ Sair';
+}
+function exitAdmin() {
+  isAdmin = false; localStorage.removeItem('mtrx_admin');
+  document.body.classList.remove('admin-mode');
+  document.getElementById('adminBadge').classList.remove('visible');
+  document.getElementById('adminPanel').classList.remove('visible');
+  document.getElementById('adminToggleBtn').textContent = '⚿ Admin';
+  toast('Modo Admin desativado');
+}
+
+// ── FILTER ──
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active'); renderAll();
+}
+
+// ── RENDER ──
+function renderAll() { renderFeatured(); renderCategories(); }
+
+function renderFeatured() {
+  const strip = document.getElementById('featuredStrip');
+  const section = document.getElementById('featuredSection');
+  const featured = [];
+  db.categories.forEach(cat => cat.subcategories.forEach(sub => sub.prompts.forEach(p => { if (p.featured) featured.push(p); })));
+  if (!featured.length || currentFilter === 'featured') { section.style.display = 'none'; return; }
+  section.style.display = '';
+  strip.innerHTML = featured.map(p => `<span class="featured-chip" onclick="scrollToPrompt('${p.id}')">${p.title}</span>`).join('');
+}
+
+function renderCategories() {
+  const content = document.getElementById('mainContent');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let html = '';
+  db.categories.forEach(cat => {
+    if (currentFilter === 'image' && cat.type !== 'image') return;
+    if (currentFilter === 'audio' && cat.type !== 'audio') return;
+    let catHtml = ''; let catVisible = 0;
+    cat.subcategories.forEach(sub => {
+      const filtered = sub.prompts.filter(p => {
+        if (currentFilter === 'featured' && !p.featured) return false;
+        if (search && !p.title.toLowerCase().includes(search) && !p.desc.toLowerCase().includes(search) && !p.prompt.toLowerCase().includes(search)) return false;
+        return true;
+      });
+      if (!filtered.length && currentFilter !== 'featured') return;
+      catVisible += filtered.length;
+      catHtml += `<div class="subcategory" id="sub_${sub.id}">
+        <div class="sub-header">
+          <div class="sub-name">${sub.name}</div>
+          ${isAdmin ? `<button class="btn-add-sub" onclick="openAddPrompt('${cat.id}','${sub.id}')">＋ Prompt</button>` : ''}
+        </div>
+        <div class="cards-grid">${filtered.map(p => renderCard(p, cat.id, sub.id)).join('')}</div>
+      </div>`;
+    });
+    if (!catHtml) return;
+    html += `<div class="category-block">
+      <div class="category-header">
+        <div class="category-title">
+          <div class="cat-icon ${cat.type}">${cat.icon}</div>
+          <div><div class="cat-name">${cat.name}</div><div class="cat-count">${catVisible} prompts</div></div>
+        </div>
+        ${isAdmin ? `<button class="btn-add-cat" onclick="openAddCategory('${cat.id}')">＋ Nova subcategoria</button>` : ''}
+      </div>${catHtml}</div>`;
+  });
+  if (!html) html = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>Nenhum prompt encontrado.<br>Tente outro termo ou categoria.</p></div>`;
+  content.innerHTML = html;
+}
+
+function renderCard(p, catId, subId) {
+  return `<div class="prompt-card ${p.featured?'featured':''}" id="card_${p.id}">
+    <div class="card-top">
+      <div class="card-title">${p.title}</div>
+      <div class="card-actions">
+        <button class="btn-copy" title="Copiar" onclick="copyPrompt('${p.id}',this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        </button>
+        <button class="btn-fav ${p.featured?'active':''}" title="${p.featured?'Remover da curadoria':'Curadoria'}" onclick="toggleFeatured('${catId}','${subId}','${p.id}')">
+          ${p.featured?'★':'☆'}
+        </button>
+        <button class="btn-edit" title="Editar" onclick="openEditPrompt('${catId}','${subId}','${p.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-delete" title="Deletar" onclick="deletePrompt('${catId}','${subId}','${p.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="card-desc">${p.desc}</div>
+    <div class="card-prompt" onclick="copyPromptText('${p.id}')" title="Clique para copiar">
+      ${p.prompt}
+      <span class="prompt-copied-msg" id="copied_${p.id}">COPIADO ✓</span>
+    </div>
+    <div class="card-tags">${p.featured?'<span class="tag featured-tag">★ Curadoria</span>':''}</div>
+  </div>`;
+}
+
+// ── COPY ──
+function getPromptById(id) {
+  for (const cat of db.categories) for (const sub of cat.subcategories) { const p = sub.prompts.find(p=>p.id===id); if(p) return p; }
+  return null;
+}
+function copyPromptText(id) {
+  const p = getPromptById(id); if (!p) return;
+  navigator.clipboard.writeText(p.prompt).then(() => {
+    const el = document.getElementById('copied_'+id);
+    if (el) { el.style.opacity='1'; setTimeout(()=>el.style.opacity='0', 850); }
+    flashCard(id);
+  });
+}
+function copyPrompt(id) {
+  const p = getPromptById(id); if (!p) return;
+  navigator.clipboard.writeText(p.prompt).then(() => { toast('Prompt copiado! ✓','success'); flashCard(id); });
+}
+function flashCard(id) {
+  const card = document.getElementById('card_'+id);
+  if (card) { card.classList.add('copy-flash'); setTimeout(()=>card.classList.remove('copy-flash'), 380); }
+}
+
+// ── FEATURED ──
+function toggleFeatured(catId, subId, promptId) {
+  const cat = db.categories.find(c=>c.id===catId);
+  const sub = cat?.subcategories.find(s=>s.id===subId);
+  const p = sub?.prompts.find(p=>p.id===promptId);
+  if (!p) return;
+  p.featured = !p.featured; saveDB(); renderAll();
+  toast(p.featured?'★ Adicionado à curadoria':'Removido da curadoria','success');
+}
+
+// ── CRUD ──
+function openAddPrompt(catId, subId) {
+  editingPromptRef = {catId, subId, promptId: null};
+  document.getElementById('promptModalTitle').innerHTML = 'Adicionar <em>Prompt</em>';
+  document.getElementById('formCategory').value = catId;
+  document.getElementById('formTitle').value = '';
+  document.getElementById('formDesc').value = '';
+  document.getElementById('formPrompt').value = '';
+  const cat = db.categories.find(c=>c.id===catId);
+  const sub = cat?.subcategories.find(s=>s.id===subId);
+  document.getElementById('formSubcategory').value = sub ? sub.name : '';
+  openModal('promptModal');
+}
+function openEditPrompt(catId, subId, promptId) {
+  editingPromptRef = {catId, subId, promptId};
+  const cat = db.categories.find(c=>c.id===catId);
+  const sub = cat?.subcategories.find(s=>s.id===subId);
+  const p = sub?.prompts.find(p=>p.id===promptId);
+  if (!p) return;
+  document.getElementById('promptModalTitle').innerHTML = 'Editar <em>Prompt</em>';
+  document.getElementById('formCategory').value = catId;
+  document.getElementById('formSubcategory').value = sub.name;
+  document.getElementById('formTitle').value = p.title;
+  document.getElementById('formDesc').value = p.desc;
+  document.getElementById('formPrompt').value = p.prompt;
+  openModal('promptModal');
+}
+function openAddCategory(catId) {
+  editingPromptRef = {catId, subId: null, promptId: null};
+  document.getElementById('promptModalTitle').innerHTML = 'Nova <em>Subcategoria</em>';
+  document.getElementById('formCategory').value = catId;
+  ['formSubcategory','formTitle','formDesc','formPrompt'].forEach(id => document.getElementById(id).value = '');
+  openModal('promptModal');
+}
+function savePrompt() {
+  const title = document.getElementById('formTitle').value.trim();
+  const desc = document.getElementById('formDesc').value.trim();
+  const prompt = document.getElementById('formPrompt').value.trim();
+  const catId = document.getElementById('formCategory').value;
+  const subName = document.getElementById('formSubcategory').value.trim();
+  if (!title || !prompt) { toast('Preencha Nome e Prompt','error'); return; }
+  const cat = db.categories.find(c=>c.id===catId); if (!cat) return;
+  const ref = editingPromptRef;
+  if (ref.promptId) {
+    const sub = cat.subcategories.find(s=>s.id===ref.subId);
+    const p = sub?.prompts.find(p=>p.id===ref.promptId);
+    if (!p) return;
+    p.title = title; p.desc = desc; p.prompt = prompt;
+    toast('Prompt atualizado ✓','success');
+  } else {
+    let sub = cat.subcategories.find(s=>s.id===ref.subId);
+    if (!sub) { sub = {id:genId(), name:subName||'Nova Subcategoria', prompts:[]}; cat.subcategories.push(sub); }
+    sub.prompts.push({id:genId(), title, desc, prompt, featured:false});
+    toast('Prompt adicionado ✓','success');
+  }
+  saveDB(); closeModal('promptModal'); renderAll();
+}
+function deletePrompt(catId, subId, promptId) {
+  if (!confirm('Deletar este prompt? Não pode ser desfeito.')) return;
+  const cat = db.categories.find(c=>c.id===catId);
+  const sub = cat?.subcategories.find(s=>s.id===subId); if (!sub) return;
+  sub.prompts = sub.prompts.filter(p=>p.id!==promptId);
+  saveDB(); renderAll(); toast('Prompt deletado','error');
+}
+
+// ── SCROLL ──
+function scrollToPrompt(id) {
+  const el = document.getElementById('card_'+id); if (!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  el.style.borderColor = 'var(--accent)';
+  el.style.boxShadow = '0 0 0 2px rgba(255,69,0,0.18)';
+  setTimeout(() => { el.style.borderColor=''; el.style.boxShadow=''; }, 1600);
+}
+
+// ── MODALS ──
+function openModal(id) { document.getElementById(id).classList.add('visible'); }
+function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); }));
+
+// ── TOAST ──
+let tt;
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + type;
+  clearTimeout(tt); tt = setTimeout(() => el.className='', 2500);
+}
+
+// ── INIT ──
+if (isAdmin) activateAdmin();
+renderAll();
+</script>
+</body>
+</html>

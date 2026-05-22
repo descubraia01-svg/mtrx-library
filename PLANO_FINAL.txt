@@ -1,0 +1,142 @@
+MTRX LIBRARY — PLANO FINAL
+Gerado em 22/05/2026
+========================================
+
+
+SITUAÇÃO ATUAL
+----------------------------------------
+
+O projeto está 95% pronto. Tudo que foi pedido foi entregue.
+O único passo que falta pra estar online é o deploy na Vercel.
+
+Repositório no GitHub:
+https://github.com/descubraia01-svg/mtrx-library
+
+Branch: main
+Commits: 4
+- MTRX Library v1 MVP
+- add gitignore
+- docs: atualiza todos os documentos para estado v1 completo
+(+ DEPLOY.md novo)
+
+
+O QUE FOI ENTREGUE (v1 completo)
+----------------------------------------
+
+SEGURANÇA E UX
+- escapeHTML() em todo texto renderizado (proteção XSS)
+- copyTextSafe() com fallback para file:// (nunca falha)
+- Lixeira com Desfazer (7 segundos, restaura no índice original)
+
+DADOS
+- Exportar JSON (backup com data no nome)
+- Exportar TXT (para WhatsApp e Drive)
+- Importar JSON (restaura banco com confirmação)
+
+CONTEÚDO
+- Categoria Vídeo: 14 prompts em 4 subcategorias
+  (Câmera, Estilo Visual, Transições, Performance)
+- Tags em todos os prompts + filtro por chip clicável
+- Combos: 3 pré-construídos + builder para o admin criar novos
+
+VERSIONAMENTO
+- Git inicializado com .gitignore
+- GitHub: descubraia01-svg/mtrx-library (privado)
+
+DOCUMENTAÇÃO (6 arquivos)
+- README.md       → visão geral do projeto
+- ROADMAP.md      → o que foi feito e o que vem a seguir
+- ADMIN_GUIDE.md  → como usar o modo admin
+- MELHORIAS.md    → status de cada melhoria + SQL do Supabase pronto
+- DEPLOY.md       → guia passo a passo para o deploy
+- PLANO_FINAL.txt → este arquivo
+
+
+PRÓXIMO PASSO IMEDIATO — DEPLOY VERCEL
+----------------------------------------
+
+1. No terminal, cole este comando:
+   git push --set-upstream origin main
+
+2. Acesse: vercel.com/new
+
+3. Clique em "Continue with GitHub"
+
+4. No dropdown de conta, selecione ou adicione:
+   descubraia01-svg
+
+5. Selecione o repositório: mtrx-library
+
+6. Configurações:
+   - Framework: Other (sem build)
+   - Build Command: (deixar vazio)
+   - Output Directory: ./ (padrão)
+
+7. Clique Deploy
+
+8. Em 30 segundos o site estará em:
+   mtrx-library.vercel.app (ou URL gerada pela Vercel)
+
+DEPOIS DISSO: qualquer git push atualiza o site automaticamente.
+
+
+PRÓXIMOS PASSOS MÉDIO PRAZO — SUPABASE
+----------------------------------------
+
+Por que fazer:
+- Hoje os dados ficam no localStorage do browser
+- Se o browser limpar dados, tudo some
+- Não sincroniza entre computadores ou pessoas da equipe
+
+Como fazer (Claude faz tudo quando você tiver as credenciais):
+
+1. Crie conta gratuita em: supabase.com
+2. Crie novo projeto (aguarda ~2 minutos)
+3. Em Settings > API copie:
+   - Project URL  (ex: https://abc123.supabase.co)
+   - anon public key  (começa com eyJhbGci...)
+4. Me passe essas duas informações
+5. Rode o arquivo supabase.sql no SQL Editor
+6. Cole a anon public key no arquivo config.js
+7. git push → site atualiza → dados agora são centralizados
+
+O SQL da tabela de sincronização está pronto no arquivo supabase.sql.
+
+
+BACKLOG (sem prioridade imediata)
+----------------------------------------
+
+- Histórico de uso (prompts mais copiados)
+- Fontes offline (Syne sem depender do Google Fonts)
+- Cursor acessível (respeitar prefers-reduced-motion)
+- Domínio próprio (após Vercel estável)
+- Login admin online (após Supabase)
+
+
+ARQUIVOS NA PASTA DO PROJETO
+----------------------------------------
+
+index.html        → app completo (72KB, 1284 linhas)
+config.js         → configuração pública do Supabase
+supabase.sql      → cria tabela e policies no Supabase
+README.md         → visão geral
+ROADMAP.md        → fases concluídas e próximas
+ADMIN_GUIDE.md    → guia do modo admin
+MELHORIAS.md      → status + SQL do Supabase
+DEPLOY.md         → guia de deploy Vercel
+PLANO_FINAL.txt   → este arquivo
+.gitignore        → ignora .bak e .bak2
+index.html.bak    → backup original
+index.html.bak2   → backup versão awwwards
+
+
+SENHA ADMIN
+----------------------------------------
+
+Para acessar o modo admin:
+- Clique 3x no logo MTRX
+- Senha: mtrx2024
+
+
+========================================
+MTRX LIBRARY v1 — 22/05/2026

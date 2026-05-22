@@ -113,18 +113,70 @@
   }
   #adminToggleBtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-  /* APP INTRO */
+  /* SECTION HOME */
+  .section-home {
+    padding: 42px 40px 80px; max-width: 1040px;
+    opacity: 0; transform: translateY(24px);
+    animation: sup 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.6s;
+  }
+  .section-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+  .section-card {
+    min-height: 156px; border-radius: 18px; background: rgba(10,10,10,0.86);
+    border: 2px solid var(--section-color); color: var(--text);
+    box-shadow: 0 0 28px color-mix(in srgb, var(--section-color) 36%, transparent),
+                inset 0 0 36px rgba(255,255,255,0.02);
+    display: flex; align-items: center; justify-content: center;
+    cursor: none; transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .section-card::before {
+    content: ''; position: absolute; inset: -40%; opacity: 0.18;
+    background: radial-gradient(circle at 70% 30%, var(--section-color), transparent 46%);
+  }
+  .section-card:hover {
+    transform: translateY(-3px);
+    background: rgba(18,18,18,0.94);
+    box-shadow: 0 0 42px color-mix(in srgb, var(--section-color) 44%, transparent),
+                inset 0 0 42px rgba(255,255,255,0.03);
+  }
+  .section-card span {
+    position: relative; z-index: 1; background: #fff; color: #000;
+    padding: 13px 34px; border-radius: 18px;
+    font-size: clamp(26px, 6vw, 42px); font-weight: 800; letter-spacing: 0;
+    text-transform: uppercase; line-height: 1;
+  }
+  .section-card.songs { --section-color: var(--blue); }
+  .section-card.images { --section-color: var(--accent2); }
+  .section-card.videos { --section-color: #ff3ea5; }
+
+  body:not(.home-mode) .section-home { display: none; }
+  body.home-mode .hero,
+  body.home-mode .controls,
+  body.home-mode .category-nav,
+  body.home-mode .tag-filter-bar,
+  body.home-mode .featured-section,
+  body.home-mode .combos-section,
+  body.home-mode .main-content { display: none !important; }
+
+  /* SECTION CONTEXT */
   .hero {
-    padding: 34px 40px 24px; max-width: 1040px;
+    padding: 26px 40px 16px; max-width: 1040px;
     opacity: 0; transform: translateY(28px);
     animation: sup 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.6s;
   }
   @keyframes sup { to { opacity: 1; transform: translateY(0); } }
-  .hero-tag { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+  .hero-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .btn-back-home {
+    background: var(--bg2); border: 1px solid var(--border); color: var(--text2);
+    border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px;
+    cursor: none; font-family: var(--font); font-weight: 700; transition: all 0.2s;
+  }
+  .btn-back-home:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .hero-tag { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
   .hero-tag::before { content: ''; width: 24px; height: 1px; background: var(--accent); display: inline-block; }
-  .hero h1 { font-size: clamp(28px, 4vw, 46px); font-weight: 800; line-height: 1.08; margin-bottom: 12px; letter-spacing: 0; font-family: 'Syne', sans-serif; max-width: 760px; }
+  .hero h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.08; margin-bottom: 0; letter-spacing: 0; font-family: 'Syne', sans-serif; max-width: 760px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
-  .hero p { font-size: 14px; color: var(--text2); max-width: 620px; line-height: 1.7; font-weight: 400; letter-spacing: 0.01em; }
+  .hero p { display: none; }
 
   /* CONTROLS */
   .controls {
@@ -152,6 +204,9 @@
   }
   .filter-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg3); }
   .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  body:not(.admin-mode) .filter-btn[data-filter="image"],
+  body:not(.admin-mode) .filter-btn[data-filter="audio"],
+  body:not(.admin-mode) .filter-btn[data-filter="video"] { display: none; }
 
   /* CATEGORY NAV */
   .category-nav {
@@ -192,6 +247,7 @@
     opacity: 0; animation: fin 0.5s ease forwards 0.92s;
   }
   .result-summary strong { color: var(--accent2); }
+  .insights-panel, .result-summary { display: none !important; }
 
   /* TAG FILTER BAR */
   .tag-filter-bar {
@@ -300,6 +356,22 @@
   .btn-delete:hover { color: var(--red); }
 
   .card-desc { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 12px; font-weight: 400; }
+  .card-reference {
+    margin-bottom: 12px; border: 1px solid var(--border); background: #0d0d0d;
+    border-radius: 8px; overflow: hidden;
+  }
+  .card-reference img, .card-reference video {
+    display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #050505;
+  }
+  .card-reference audio {
+    display: block; width: 100%; height: 42px; background: #0d0d0d;
+  }
+  .reference-link {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 12px; color: var(--accent2); text-decoration: none;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .reference-link:hover { background: rgba(255,69,0,0.08); }
   .card-prompt {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: 8px; padding: 11px 13px;
@@ -436,7 +508,7 @@
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
-    .hero, .controls, .category-nav, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { max-width: none; }
+    .section-home, .hero, .controls, .category-nav, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { max-width: none; }
     .insights-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     .category-header { align-items: flex-start; gap: 16px; }
@@ -450,10 +522,15 @@
     .logo { font-size: 14px; letter-spacing: 3px; max-width: calc(100vw - 150px); overflow-wrap: anywhere; }
     #adminToggleBtn { padding: 7px 12px; font-size: 11px; }
     .admin-badge { letter-spacing: 1px; padding: 4px 8px; }
-    .hero { padding: 28px 18px 18px; }
-    .hero-tag { letter-spacing: 2.4px; gap: 10px; margin-bottom: 12px; }
+    .section-home { padding: 34px 18px 70px; }
+    .section-grid { gap: 18px; }
+    .section-card { min-height: 132px; border-radius: 16px; }
+    .section-card span { font-size: clamp(25px, 9vw, 38px); padding: 12px 28px; border-radius: 16px; }
+    .hero { padding: 22px 18px 14px; }
+    .hero-top { gap: 10px; margin-bottom: 10px; }
+    .hero-tag { letter-spacing: 2.4px; gap: 10px; }
     .hero-tag::before { width: 20px; }
-    .hero h1 { font-size: clamp(28px, 8vw, 38px); letter-spacing: 0; margin-bottom: 10px; }
+    .hero h1 { font-size: clamp(27px, 8vw, 36px); letter-spacing: 0; }
     .hero p { font-size: 13px; line-height: 1.65; max-width: 100%; }
     .controls, .category-nav, .insights-panel, .result-summary, .featured-section, .main-content, .combos-section, .tag-filter-bar { padding-left: 18px; padding-right: 18px; }
     .controls { padding-bottom: 20px; align-items: stretch; }
@@ -511,7 +588,7 @@
   body.admin-mode .btn-add-sub { display: flex !important; }
 </style>
 </head>
-<body>
+<body class="home-mode">
 
 <!-- CURSOR -->
 <div id="cursor"></div>
@@ -537,11 +614,22 @@
   </div>
 </header>
 
-<!-- HERO -->
+<!-- SECTION HOME -->
+<section class="section-home" aria-label="Escolha uma secao">
+  <div class="section-grid">
+    <button class="section-card songs" onclick="enterSection('audio')"><span>Songs</span></button>
+    <button class="section-card images" onclick="enterSection('image')"><span>Imagens</span></button>
+    <button class="section-card videos" onclick="enterSection('video')"><span>Vídeos</span></button>
+  </div>
+</section>
+
+<!-- SECTION CONTEXT -->
 <section class="hero">
-  <div class="hero-tag">Banco de prompts</div>
-  <h1>MTRX Library <em>operacional.</em></h1>
-  <p>Base interna para encontrar, copiar e organizar prompts por categoria. Sem apresentacao longa: busca, filtro e uso direto.</p>
+  <div class="hero-top">
+    <button class="btn-back-home" onclick="goHome()">← Seções</button>
+    <div class="hero-tag" id="sectionEyebrow">Banco de prompts</div>
+  </div>
+  <h1 id="sectionTitle">MTRX Library <em>operacional.</em></h1>
 </section>
 
 <!-- CONTROLS -->
@@ -553,11 +641,11 @@
     <input type="text" id="searchInput" placeholder="Buscar prompts, tags, categorias..." oninput="renderAll()">
   </div>
   <div class="filter-btns">
-    <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
-    <button class="filter-btn" onclick="setFilter('image',this)">🖼 Imagem</button>
-    <button class="filter-btn" onclick="setFilter('audio',this)">🎵 Áudio</button>
-    <button class="filter-btn" onclick="setFilter('video',this)">🎬 Vídeo</button>
-    <button class="filter-btn" onclick="setFilter('featured',this)">⭐ Curadoria</button>
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
+    <button class="filter-btn" data-filter="image" onclick="setFilter('image',this)">🖼 Imagem</button>
+    <button class="filter-btn" data-filter="audio" onclick="setFilter('audio',this)">🎵 Áudio</button>
+    <button class="filter-btn" data-filter="video" onclick="setFilter('video',this)">🎬 Vídeo</button>
+    <button class="filter-btn" data-filter="featured" onclick="setFilter('featured',this)">⭐ Curadoria</button>
   </div>
 </div>
 
@@ -681,6 +769,25 @@
       <input type="text" id="formTags" placeholder="Ex: capa, reels, artista, funk, Suno">
       <div class="form-hint">Tags ajudam a filtrar rapidamente. Use termos curtos e diretos.</div>
     </div>
+    <div class="form-group">
+      <label>Referência</label>
+      <select id="formReferenceType">
+        <option value="">Sem referência</option>
+        <option value="audio">Áudio</option>
+        <option value="image">Imagem</option>
+        <option value="video">Vídeo</option>
+        <option value="link">Link</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>URL da referência</label>
+      <input type="url" id="formReferenceUrl" placeholder="https://...">
+      <div class="form-hint">Use uma URL pública. Upload direto no Supabase Storage entra na próxima fase.</div>
+    </div>
+    <div class="form-group">
+      <label>Nome da referência</label>
+      <input type="text" id="formReferenceLabel" placeholder="Ex: Exemplo trap dark, capa editorial, preview lipsync">
+    </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('promptModal')">Cancelar</button>
       <button class="btn-save" onclick="savePrompt()">Salvar Prompt</button>
@@ -738,7 +845,7 @@ document.addEventListener('mousemove', e => {
   requestAnimationFrame(animRing);
 })();
 document.addEventListener('mouseover', e => {
-  const el = e.target.closest('button,a,.filter-btn,.featured-chip,.combo-chip,.tag-chip,.prompt-card,input,select,textarea');
+  const el = e.target.closest('button,a,.filter-btn,.featured-chip,.combo-chip,.tag-chip,.prompt-card,input,select,textarea,audio,video');
   if (!el) return;
   if (el.classList.contains('card-prompt') || el.classList.contains('btn-copy') || el.classList.contains('prompt-card')) {
     document.body.className = document.body.className.replace(/cur-\w+/g,'').trim() + ' cur-copy';
@@ -747,7 +854,7 @@ document.addEventListener('mouseover', e => {
   }
 });
 document.addEventListener('mouseout', e => {
-  const el = e.target.closest('button,a,.filter-btn,.featured-chip,.combo-chip,.tag-chip,.prompt-card,input,select,textarea');
+  const el = e.target.closest('button,a,.filter-btn,.featured-chip,.combo-chip,.tag-chip,.prompt-card,input,select,textarea,audio,video');
   if (el) document.body.className = document.body.className.replace(/cur-\w+/g,'').trim();
 });
 
@@ -763,6 +870,13 @@ function escapeHTML(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
+}
+
+function safeReferenceUrl(url) {
+  if (!url) return '';
+  const value = String(url).trim();
+  if (/^(https?:\/\/|\/|\.\/)/i.test(value)) return value;
+  return '';
 }
 
 // ── COPY WITH FALLBACK ──
@@ -938,7 +1052,6 @@ async function hydrateFromSupabase() {
     localStorage.setItem('mtrx_db', JSON.stringify(db));
     syncStatus = 'Sincronizado com Supabase';
     renderAll();
-    toast('Banco sincronizado com Supabase ✓', 'success');
     return;
   }
 
@@ -972,6 +1085,7 @@ async function saveDBToSupabase(nextDB) {
 let db = loadDB();
 let isAdmin = localStorage.getItem('mtrx_admin') === 'true';
 let currentFilter = 'all';
+let currentSection = null;
 let activeTag = null;
 let editingPromptRef = null;
 let deletedPromptCache = null;
@@ -991,6 +1105,58 @@ function saveDB() {
   saveDBToSupabase(db);
 }
 function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+function getSectionMeta(type) {
+  return {
+    audio: { label: 'Songs', eyebrow: 'Prompts de musica', accent: 'var(--blue)' },
+    image: { label: 'Imagens', eyebrow: 'Prompts de imagem', accent: 'var(--accent)' },
+    video: { label: 'Vídeos', eyebrow: 'Prompts de video', accent: '#ff3ea5' }
+  }[type] || { label: 'Biblioteca', eyebrow: 'Banco de prompts', accent: 'var(--accent)' };
+}
+
+function enterSection(type) {
+  currentSection = type;
+  currentFilter = type;
+  activeTag = null;
+  tagsExpanded = false;
+  document.body.classList.remove('home-mode');
+  document.documentElement.style.setProperty('--accent', getSectionMeta(type).accent);
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.filter-btn[data-filter="${type}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('searchInput').value = '';
+  renderSectionHeader();
+  renderAll();
+  if (location.hash !== '#' + type) history.replaceState(null, '', '#' + type);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function goHome() {
+  currentSection = null;
+  currentFilter = 'all';
+  activeTag = null;
+  tagsExpanded = false;
+  document.body.classList.add('home-mode');
+  document.documentElement.style.setProperty('--accent', '#FF4500');
+  document.getElementById('searchInput').value = '';
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  renderAll();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function renderSectionHeader() {
+  const meta = getSectionMeta(currentSection);
+  document.getElementById('sectionEyebrow').textContent = meta.eyebrow;
+  document.getElementById('sectionTitle').innerHTML = `${escapeHTML(meta.label)} <em>library.</em>`;
+}
+
+function sectionFromHash() {
+  const value = location.hash.replace('#','').toLowerCase();
+  if (value === 'songs' || value === 'audio') return 'audio';
+  if (value === 'imagens' || value === 'images' || value === 'image') return 'image';
+  if (value === 'videos' || value === 'vídeos' || value === 'video') return 'video';
+  return null;
+}
 
 // ── ADMIN ──
 function openPasswordModal() {
@@ -1053,6 +1219,7 @@ function exportTXT() {
         if (p.desc) txt += '    Descrição: ' + p.desc + '\n';
         txt += '    Prompt: ' + p.prompt + '\n';
         if (p.tags && p.tags.length) txt += '    Tags: ' + p.tags.join(', ') + '\n';
+        if (p.referenceUrl) txt += '    Referência: ' + (p.referenceType || 'link') + ' — ' + p.referenceUrl + '\n';
         if (p.featured) txt += '    ★ Curadoria\n';
       });
       txt += '\n';
@@ -1109,9 +1276,12 @@ function importJSON(event) {
 
 // ── FILTER ──
 function setFilter(f, btn) {
-  currentFilter = f; activeTag = null;
+  if (f === 'all') f = currentSection || 'all';
+  currentFilter = f; currentSection = ['image','audio','video'].includes(f) ? f : currentSection;
+  activeTag = null;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  if (currentSection) renderSectionHeader();
   renderAll();
 }
 
@@ -1129,6 +1299,7 @@ function toggleTags() {
 function getAllTags() {
   const tags = new Set();
   db.categories.forEach(cat => {
+    if (currentSection && cat.type !== currentSection) return;
     if (currentFilter !== 'all' && currentFilter !== 'featured' && cat.type !== currentFilter) return;
     cat.subcategories.forEach(sub => sub.prompts.forEach(p => {
       if (p.tags) p.tags.forEach(t => tags.add(t.trim()));
@@ -1160,6 +1331,7 @@ function getLibraryMetrics() {
 }
 
 function promptMatches(p, cat, search) {
+  if (currentSection && cat.type !== currentSection) return false;
   if (currentFilter === 'image' && cat.type !== 'image') return false;
   if (currentFilter === 'audio' && cat.type !== 'audio') return false;
   if (currentFilter === 'video' && cat.type !== 'video') return false;
@@ -1190,7 +1362,7 @@ function renderStats() {
     audio: 'prompts de audio',
     video: 'prompts de video',
     featured: 'curadoria'
-  }[currentFilter] || 'biblioteca';
+  }[currentSection || currentFilter] || 'biblioteca';
   const search = document.getElementById('searchInput')?.value.trim();
 
   document.getElementById('statPrompts').textContent = metrics.prompts;
@@ -1225,7 +1397,7 @@ function renderAll() { renderStats(); renderCategoryNav(); renderFeatured(); ren
 function renderCategoryNav() {
   const nav = document.getElementById('categoryNav');
   const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-  nav.innerHTML = db.categories.map(cat => {
+  nav.innerHTML = db.categories.filter(cat => !currentSection || cat.type === currentSection).map(cat => {
     const count = cat.subcategories.reduce((acc, sub) =>
       acc + sub.prompts.filter(p => promptMatches(p, cat, search)).length, 0);
     return `<button class="category-nav-chip" onclick="jumpToCategory('${escapeHTML(cat.id)}')">${escapeHTML(cat.icon)} ${escapeHTML(cat.name)} <small>${count}</small></button>`;
@@ -1236,7 +1408,10 @@ function renderFeatured() {
   const strip = document.getElementById('featuredStrip');
   const section = document.getElementById('featuredSection');
   const featured = [];
-  db.categories.forEach(cat => cat.subcategories.forEach(sub => sub.prompts.forEach(p => { if (p.featured) featured.push(p); })));
+  db.categories.forEach(cat => {
+    if (currentSection && cat.type !== currentSection) return;
+    cat.subcategories.forEach(sub => sub.prompts.forEach(p => { if (p.featured) featured.push(p); }));
+  });
   if (!featured.length || currentFilter === 'featured') { section.style.display = 'none'; return; }
   section.style.display = '';
   strip.innerHTML = featured.map(p =>
@@ -1247,7 +1422,7 @@ function renderFeatured() {
 function renderCombos() {
   const strip = document.getElementById('combosStrip');
   const section = document.getElementById('combosSection');
-  const combos = db.combos || [];
+  const combos = (db.combos || []).filter(c => !currentSection || getComboType(c) === currentSection);
   if (!combos.length || currentFilter === 'featured') { section.style.display = 'none'; return; }
   section.style.display = '';
   strip.innerHTML = combos.map(c =>
@@ -1255,11 +1430,20 @@ function renderCombos() {
   ).join('');
 }
 
+function getComboType(combo) {
+  if (combo.type) return combo.type;
+  const haystack = `${combo.name || ''} ${(combo.parts || []).map(p => `${p.label} ${p.prompt}`).join(' ')}`.toLowerCase();
+  if (haystack.includes('video') || haystack.includes('videoclipe') || haystack.includes('runway') || haystack.includes('kling')) return 'video';
+  if (haystack.includes('suno') || haystack.includes('sertanejo') || haystack.includes('gênero') || haystack.includes('genero') || haystack.includes('voz')) return 'audio';
+  return 'image';
+}
+
 function renderCategories() {
   const content = document.getElementById('mainContent');
   const search = document.getElementById('searchInput').value.toLowerCase();
   let html = '';
   db.categories.forEach(cat => {
+    if (currentSection && cat.type !== currentSection) return;
     if (currentFilter === 'image' && cat.type !== 'image') return;
     if (currentFilter === 'audio' && cat.type !== 'audio') return;
     if (currentFilter === 'video' && cat.type !== 'video') return;
@@ -1296,6 +1480,7 @@ function renderCard(p, catId, subId, catType) {
   const tags = (p.tags || []).map(t =>
     `<span class="tag custom-tag ${activeTag===t?'active':''}" onclick="setTag('${escapeHTML(t)}')">${escapeHTML(t)}</span>`
   ).join('');
+  const reference = renderReference(p);
   return `<div class="prompt-card ${p.featured?'featured':''}" id="card_${p.id}">
     <div class="card-top">
       <div class="card-title">${escapeHTML(p.title)}</div>
@@ -1315,6 +1500,7 @@ function renderCard(p, catId, subId, catType) {
       </div>
     </div>
     <div class="card-desc">${escapeHTML(p.desc)}</div>
+    ${reference}
     <div class="card-prompt" onclick="copyPromptText('${escapeHTML(p.id)}')" title="Clique para copiar">
       ${escapeHTML(p.prompt)}
       <span class="prompt-copied-msg" id="copied_${p.id}">COPIADO ✓</span>
@@ -1326,6 +1512,24 @@ function renderCard(p, catId, subId, catType) {
       ${tags}
     </div>
   </div>`;
+}
+
+function renderReference(p) {
+  const url = safeReferenceUrl(p.referenceUrl);
+  if (!url) return '';
+  const type = p.referenceType || 'link';
+  const label = escapeHTML(p.referenceLabel || 'Referência');
+  const safeUrl = escapeHTML(url);
+  if (type === 'audio') {
+    return `<div class="card-reference"><audio controls preload="none" src="${safeUrl}"></audio></div>`;
+  }
+  if (type === 'image') {
+    return `<div class="card-reference"><img src="${safeUrl}" alt="${label}" loading="lazy"></div>`;
+  }
+  if (type === 'video') {
+    return `<div class="card-reference"><video controls preload="metadata" src="${safeUrl}"></video></div>`;
+  }
+  return `<div class="card-reference"><a class="reference-link" href="${safeUrl}" target="_blank" rel="noopener">${label}<span>↗</span></a></div>`;
 }
 
 // ── COPY ──
@@ -1386,6 +1590,9 @@ function openAddPrompt(catId, subId) {
   document.getElementById('formDesc').value = '';
   document.getElementById('formPrompt').value = '';
   document.getElementById('formTags').value = '';
+  document.getElementById('formReferenceType').value = catId === 'audio' ? 'audio' : catId === 'image' ? 'image' : catId === 'video' ? 'video' : '';
+  document.getElementById('formReferenceUrl').value = '';
+  document.getElementById('formReferenceLabel').value = '';
   const cat = db.categories.find(c=>c.id===catId);
   const sub = cat?.subcategories.find(s=>s.id===subId);
   document.getElementById('formSubcategory').value = sub ? sub.name : '';
@@ -1405,6 +1612,9 @@ function openEditPrompt(catId, subId, promptId) {
   document.getElementById('formDesc').value = p.desc;
   document.getElementById('formPrompt').value = p.prompt;
   document.getElementById('formTags').value = (p.tags||[]).join(', ');
+  document.getElementById('formReferenceType').value = p.referenceType || '';
+  document.getElementById('formReferenceUrl').value = p.referenceUrl || '';
+  document.getElementById('formReferenceLabel').value = p.referenceLabel || '';
   openModal('promptModal');
 }
 
@@ -1412,7 +1622,8 @@ function openAddCategory(catId) {
   editingPromptRef = {catId, subId: null, promptId: null};
   document.getElementById('promptModalTitle').innerHTML = 'Nova <em>Subcategoria</em>';
   document.getElementById('formCategory').value = catId;
-  ['formSubcategory','formTitle','formDesc','formPrompt','formTags'].forEach(id => document.getElementById(id).value = '');
+  ['formSubcategory','formTitle','formDesc','formPrompt','formTags','formReferenceUrl','formReferenceLabel'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('formReferenceType').value = catId === 'audio' ? 'audio' : catId === 'image' ? 'image' : catId === 'video' ? 'video' : '';
   openModal('promptModal');
 }
 
@@ -1424,7 +1635,14 @@ function savePrompt() {
   const subName = document.getElementById('formSubcategory').value.trim();
   const tagsRaw = document.getElementById('formTags').value;
   const tags = tagsRaw.split(',').map(t=>t.trim()).filter(t=>t.length>0);
+  const referenceType = document.getElementById('formReferenceType').value;
+  const referenceUrl = safeReferenceUrl(document.getElementById('formReferenceUrl').value);
+  const referenceLabel = document.getElementById('formReferenceLabel').value.trim();
   if (!title || !prompt) { toast('Preencha Nome e Prompt','error'); return; }
+  if (document.getElementById('formReferenceUrl').value.trim() && !referenceUrl) {
+    toast('Use uma URL de referência começando com http:// ou https://','error');
+    return;
+  }
   const cat = db.categories.find(c=>c.id===catId); if (!cat) return;
   const ref = editingPromptRef;
   if (ref.promptId) {
@@ -1432,11 +1650,14 @@ function savePrompt() {
     const p = sub?.prompts.find(p=>p.id===ref.promptId);
     if (!p) return;
     p.title = title; p.desc = desc; p.prompt = prompt; p.tags = tags;
+    p.referenceType = referenceUrl ? referenceType : '';
+    p.referenceUrl = referenceUrl;
+    p.referenceLabel = referenceLabel;
     toast('Prompt atualizado ✓','success');
   } else {
     let sub = cat.subcategories.find(s=>s.id===ref.subId);
     if (!sub) { sub = {id:genId(), name:subName||'Nova Subcategoria', prompts:[]}; cat.subcategories.push(sub); }
-    sub.prompts.push({id:genId(), title, desc, prompt, featured:false, tags});
+    sub.prompts.push({id:genId(), title, desc, prompt, featured:false, tags, referenceType: referenceUrl ? referenceType : '', referenceUrl, referenceLabel});
     toast('Prompt adicionado ✓','success');
   }
   saveDB(); closeModal('promptModal'); renderAll();
@@ -1546,7 +1767,7 @@ function saveCombo() {
   });
   if (parts.length < 2) { toast('Adicione pelo menos 2 partes','error'); return; }
   if (!db.combos) db.combos = [];
-  db.combos.push({id: genId(), name, icon, parts});
+  db.combos.push({id: genId(), name, icon, parts, type: currentSection || currentFilter || 'image'});
   saveDB(); closeModal('comboBuilderModal'); renderAll();
   toast('Combo criado ✓','success');
 }
@@ -1587,6 +1808,8 @@ function toast(msg, type='') {
 // ── INIT ──
 if (isAdmin) activateAdmin();
 renderAll();
+const initialSection = sectionFromHash();
+if (initialSection) enterSection(initialSection);
 hydrateFromSupabase();
 </script>
 </body>

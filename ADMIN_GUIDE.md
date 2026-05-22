@@ -1,108 +1,90 @@
 # GUIA DO ADMIN — MTRX LIBRARY
 
-## Como entrar no modo admin
+## Acesso
 
-1. Abra `index.html` no browser
-2. Clique **3 vezes** no logo **MTRX** (canto superior esquerdo)
-3. Digite a senha: `mtrx2024`
-4. O painel admin aparece na parte inferior da tela
+Site publicado:
 
-Para sair: clique em **Sair** no painel admin.
+https://mtrx-library.vercel.app
 
----
+Para entrar no modo admin:
+
+1. Clique no botao **Admin**
+2. Digite a senha `mtrx2024`
+3. Use o painel fixo no rodape
+
+Para sair, clique em **Sair**.
 
 ## O que o admin pode fazer
 
 ### Prompts
-- **Criar** — clique no `+` ao lado de qualquer subcategoria
-- **Editar** — clique no ícone ✏️ no card do prompt
-- **Deletar** — clique no ícone 🗑️ → barra de Desfazer aparece por 7 segundos
 
-### Categorias e Subcategorias
-- Criar nova categoria (com ícone e tipo)
-- Criar nova subcategoria dentro de uma categoria existente
-- Deletar categoria ou subcategoria (cuidado: apaga tudo dentro)
+- Criar prompt dentro de uma subcategoria
+- Editar titulo, descricao, texto copiavel e tags
+- Favoritar/remover da curadoria
+- Deletar prompt com opcao de desfazer por 7 segundos
 
 ### Combos
-- **Criar combo** — botão "Novo Combo" no painel admin
-- Definir nome, ícone e partes (label + prompt para cada parte)
-- Combos aparecem na aba "Combos" para a equipe copiar
 
----
+- Criar combos com nome, icone e partes
+- Cada parte tem label e texto de prompt
+- A equipe copia o combo completo com um clique
 
-## Gerenciamento de dados
+### Dados
 
-### Exportar JSON (backup completo)
-- Botão **"Exportar JSON"** no painel admin
-- Gera arquivo `mtrx-library-backup-YYYY-MM-DD.json`
-- Salve em local seguro (Drive, iCloud, etc.)
-- **Faça backup antes de qualquer mudança grande**
+- Exportar JSON para backup completo
+- Exportar TXT para compartilhar no WhatsApp ou Drive
+- Importar JSON para restaurar ou migrar uma base
 
-### Exportar TXT (compartilhar)
-- Botão **"Exportar TXT"** no painel admin
-- Gera arquivo de texto formatado por categoria
-- Útil para enviar no WhatsApp ou Google Drive
+## Banco de dados
 
-### Importar JSON (restaurar)
-- Botão **"Importar JSON"** no painel admin
-- Selecione o arquivo `.json` gerado pelo Export
-- **ATENÇÃO: substitui TODO o banco atual** — confirme antes de prosseguir
-- Use para restaurar backup ou migrar para outro computador/browser
+O projeto agora usa Supabase como banco central.
 
----
+Mesmo assim, o app mantem fallback em `localStorage`. Isso significa:
 
-## Regras de boas práticas
+- Se o Supabase estiver ok, os dados sincronizam online
+- Se o Supabase falhar, o app continua abrindo com backup local
+- Mudancas grandes ainda devem ter backup JSON antes
 
-| Ação | Recomendação |
+## Boas praticas para cadastrar prompts
+
+| Campo | Recomendacao |
 |---|---|
-| Novo prompt | Sempre adicionar `tags` relevantes |
-| Deletar prompt | Usar Desfazer se cometeu erro |
-| Mudança grande | Exportar JSON antes |
-| Novo computador | Exportar JSON → importar no novo browser |
-| Browser diferente | Dados NÃO sincronizam (localStorage é local) |
+| Titulo | Curto, claro e facil de buscar |
+| Descricao | Explicar quando usar e qual efeito criativo gera |
+| Prompt | Texto exato que sera copiado para a IA |
+| Tags | Termos curtos, separados por virgula |
+| Curadoria | Marcar apenas o que o time usa bastante |
 
----
+Tags recomendadas:
 
-## Estrutura de um prompt
-
-```json
-{
-  "id": "unique-id",
-  "title": "Nome do Prompt",
-  "description": "Para que serve este prompt",
-  "text": "O prompt em si que será copiado",
-  "tags": ["tag1", "tag2", "tag3"],
-  "featured": false
-}
+```txt
+capa, reels, show, artista, videoclipe, editorial, palco, estudio,
+produto, logotipo, sertanejo, funk, trap, Suno, Midjourney, Runway,
+Kling, Sora, ChatGPT, WhatsApp
 ```
 
-**Tags úteis:** `capa`, `reels`, `show`, `artista`, `sertanejo`, `funk`, `voz feminina`, `Suno`, `Midjourney`, `Runway`, `Kling`, `videoclipe`, `editorial`, `palco`, `estúdio`, `produto`, `logotipo`
+## Fluxo seguro para mudancas grandes
 
----
-
-## Senha admin
-
-Senha atual: `mtrx2024`
-
-Para trocar: abra `index.html` em editor de código → busque `const ADMIN_CODE` → altere o valor → salve.
-
----
+1. Entrar no admin
+2. Exportar JSON
+3. Fazer as alteracoes
+4. Testar busca, tags e copia
+5. Se algo der errado, importar o JSON salvo
 
 ## Problemas comuns
 
-**Prompt não copiou:**
-- Se abrir via `file://`, o clipboard pode ser bloqueado pelo browser
-- O sistema tem fallback automático — deve funcionar mesmo assim
-- Se persistir: abra via servidor local ou use Chrome
+**Prompt nao copiou**
 
-**Dados sumiram:**
-- localStorage foi limpo (modo privado, limpeza de dados do browser)
-- Restaure pelo backup JSON se tiver
+Use o botao de copiar no card. Em navegadores com bloqueio de clipboard, o app tenta um fallback automatico.
 
-**Site não carrega fonte:**
-- Você está offline — a fonte Syne vem do Google Fonts
-- O site funciona normalmente, mas com fonte do sistema
+**Nao apareceu no outro computador**
+
+Confira o painel de metricas. Se aparecer erro de Supabase, o app pode estar usando o backup local.
+
+**Quero trocar a senha**
+
+Abra `index.html`, procure `const ADMIN_CODE` e altere o valor. Depois faca commit e push.
 
 ---
 
-*MTRX LIBRARY v1 — Admin Guide — 22/05/2026*
+MTRX LIBRARY v1.1 — Admin Guide — 22/05/2026

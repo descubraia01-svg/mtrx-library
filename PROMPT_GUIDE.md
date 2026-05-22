@@ -14,11 +14,13 @@ Quanto mais específico o prompt, melhor o resultado.
 
 ## Como usar o site
 
-1. Abra o `index.html` no seu browser (Chrome, Safari, etc.)
+1. Abra o site: https://mtrx-library.vercel.app
 2. Navegue pelas categorias ou use a busca
 3. Encontrou um prompt interessante? **Clique no texto laranja** — ele é copiado automaticamente
 4. Cole na ferramenta de IA que você está usando
 5. Combine com outros prompts para resultados melhores
+
+Agora a biblioteca tambem mostra um resumo do banco: total de prompts, tags, combos e status dos dados. Use isso para entender se voce esta vendo a base completa ou um recorte filtrado.
 
 ---
 
@@ -145,6 +147,20 @@ Se você tiver uma ideia mas não souber o prompt exato, abra o site e:
 1. Use a **busca** para encontrar palavras relacionadas
 2. Veja a **Curadoria do Time** — são os prompts mais usados e eficientes
 3. Copie e **adapte** — não precisa usar exatamente como está, combine com suas ideias
+
+## Como a base vai crescer
+
+A biblioteca deve ganhar mais material por contexto de uso:
+
+| Contexto | Exemplos de busca |
+|---|---|
+| Capa de música | `capa`, `artista`, `editorial`, `studio` |
+| Reels | `reels`, `movimento`, `transicao`, `energia` |
+| Videoclipe | `videoclipe`, `palco`, `camera`, `performance` |
+| Música | `Suno`, `sertanejo`, `funk`, `trap`, `voz` |
+| Atendimento | `WhatsApp`, `venda`, `follow-up`, `relacionamento` |
+
+Quando cadastrar novos prompts, pense sempre em tres coisas: **para que serve**, **qual ferramenta usa** e **em qual situacao a equipe vai procurar**.
 
 ---
 

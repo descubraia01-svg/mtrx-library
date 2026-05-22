@@ -1,142 +1,124 @@
-MTRX LIBRARY — PLANO FINAL
-Gerado em 22/05/2026
+MTRX LIBRARY — PLANO ATUAL
+Atualizado em 22/05/2026
 ========================================
 
 
-SITUAÇÃO ATUAL
+SITUACAO ATUAL
 ----------------------------------------
 
-O projeto está 95% pronto. Tudo que foi pedido foi entregue.
-O único passo que falta pra estar online é o deploy na Vercel.
+O projeto saiu do MVP local e esta online.
 
-Repositório no GitHub:
+Site publicado:
+https://mtrx-library.vercel.app
+
+Repositorio:
 https://github.com/descubraia01-svg/mtrx-library
 
-Branch: main
-Commits: 4
-- MTRX Library v1 MVP
-- add gitignore
-- docs: atualiza todos os documentos para estado v1 completo
-(+ DEPLOY.md novo)
+Projeto Vercel:
+https://vercel.com/descubraia01-6342s-projects/mtrx-library
+
+Supabase:
+https://supabase.com/dashboard/project/zqzdjcpaqtasiatbjxhs
+
+Branch de producao:
+main
 
 
-O QUE FOI ENTREGUE (v1 completo)
+O QUE ESTA PRONTO
 ----------------------------------------
 
-SEGURANÇA E UX
-- escapeHTML() em todo texto renderizado (proteção XSS)
-- copyTextSafe() com fallback para file:// (nunca falha)
-- Lixeira com Desfazer (7 segundos, restaura no índice original)
+PRODUTO
+- Biblioteca de prompts para imagem, audio, video e WhatsApp
+- Busca em tempo real
+- Filtros por categoria
+- Tags clicaveis
+- Curadoria do time
+- Combos rapidos
+- Copia de prompt com um clique
 
-DADOS
-- Exportar JSON (backup com data no nome)
-- Exportar TXT (para WhatsApp e Drive)
-- Importar JSON (restaura banco com confirmação)
+ADMIN
+- Senha admin: mtrx2024
+- Criar, editar e deletar prompts
+- Marcar prompts como curadoria
+- Criar combos
+- Exportar JSON
+- Exportar TXT
+- Importar JSON
+- Desfazer exclusao por 7 segundos
 
-CONTEÚDO
-- Categoria Vídeo: 14 prompts em 4 subcategorias
-  (Câmera, Estilo Visual, Transições, Performance)
-- Tags em todos os prompts + filtro por chip clicável
-- Combos: 3 pré-construídos + builder para o admin criar novos
+BANCO
+- Supabase conectado
+- Tabela principal: mtrx_library_state
+- Backup local via localStorage
+- SQL salvo em supabase.sql
 
-VERSIONAMENTO
-- Git inicializado com .gitignore
-- GitHub: descubraia01-svg/mtrx-library (privado)
-
-DOCUMENTAÇÃO (6 arquivos)
-- README.md       → visão geral do projeto
-- ROADMAP.md      → o que foi feito e o que vem a seguir
-- ADMIN_GUIDE.md  → como usar o modo admin
-- MELHORIAS.md    → status de cada melhoria + SQL do Supabase pronto
-- DEPLOY.md       → guia passo a passo para o deploy
-- PLANO_FINAL.txt → este arquivo
+DEPLOY
+- Vercel publicado
+- GitHub conectado
+- Qualquer git push em main atualiza o site
 
 
-PRÓXIMO PASSO IMEDIATO — DEPLOY VERCEL
+MELHORIA DIRETA FEITA AGORA
 ----------------------------------------
 
-1. No terminal, cole este comando:
-   git push --set-upstream origin main
+A v1.1 iniciou a adaptacao para uma biblioteca maior:
 
-2. Acesse: vercel.com/new
-
-3. Clique em "Continue with GitHub"
-
-4. No dropdown de conta, selecione ou adicione:
-   descubraia01-svg
-
-5. Selecione o repositório: mtrx-library
-
-6. Configurações:
-   - Framework: Other (sem build)
-   - Build Command: (deixar vazio)
-   - Output Directory: ./ (padrão)
-
-7. Clique Deploy
-
-8. Em 30 segundos o site estará em:
-   mtrx-library.vercel.app (ou URL gerada pela Vercel)
-
-DEPOIS DISSO: qualquer git push atualiza o site automaticamente.
+- Layout mais responsivo para mobile, tablet e desktop
+- Painel de metricas:
+  - total de prompts
+  - total de tags
+  - total de combos
+  - status do banco
+- Resumo dinamico da busca e dos filtros
+- Melhor comportamento de tags, combos e curadoria em telas pequenas
+- Cards mais resistentes a textos longos
+- Modais melhores no celular
+- Suporte a prefers-reduced-motion
 
 
-PRÓXIMOS PASSOS MÉDIO PRAZO — SUPABASE
+DOMINIO
 ----------------------------------------
 
-Por que fazer:
-- Hoje os dados ficam no localStorage do browser
-- Se o browser limpar dados, tudo some
-- Não sincroniza entre computadores ou pessoas da equipe
+O dominio principal NAO deve ser usado neste projeto.
 
-Como fazer (Claude faz tudo quando você tiver as credenciais):
+mtrx.com.br ficara para a landing page principal.
 
-1. Crie conta gratuita em: supabase.com
-2. Crie novo projeto (aguarda ~2 minutos)
-3. Em Settings > API copie:
-   - Project URL  (ex: https://abc123.supabase.co)
-   - anon public key  (começa com eyJhbGci...)
-4. Me passe essas duas informações
-5. Rode o arquivo supabase.sql no SQL Editor
-6. Cole a anon public key no arquivo config.js
-7. git push → site atualiza → dados agora são centralizados
+Para a biblioteca, usar:
+library.mtrx.com.br
 
-O SQL da tabela de sincronização está pronto no arquivo supabase.sql.
+DNS necessario:
+Tipo: CNAME
+Nome: library
+Valor: 15726c4eab95e25c.vercel-dns-017.com.
+
+Esse passo depende do Registro.br liberar/estabilizar a configuracao de DNS.
 
 
-BACKLOG (sem prioridade imediata)
+PROXIMOS PASSOS
 ----------------------------------------
 
-- Histórico de uso (prompts mais copiados)
-- Fontes offline (Syne sem depender do Google Fonts)
-- Cursor acessível (respeitar prefers-reduced-motion)
-- Domínio próprio (após Vercel estável)
-- Login admin online (após Supabase)
+1. Finalizar DNS do subdominio library.mtrx.com.br
+2. Aumentar o banco de prompts por uso real
+3. Padronizar tags por ferramenta
+4. Criar historico de uso / prompts mais copiados
+5. Criar login admin real com Supabase Auth
+6. Preparar landing page futura no dominio mtrx.com.br
 
 
-ARQUIVOS NA PASTA DO PROJETO
+ARQUIVOS PRINCIPAIS
 ----------------------------------------
 
-index.html        → app completo (72KB, 1284 linhas)
-config.js         → configuração pública do Supabase
-supabase.sql      → cria tabela e policies no Supabase
-README.md         → visão geral
-ROADMAP.md        → fases concluídas e próximas
-ADMIN_GUIDE.md    → guia do modo admin
-MELHORIAS.md      → status + SQL do Supabase
-DEPLOY.md         → guia de deploy Vercel
-PLANO_FINAL.txt   → este arquivo
-.gitignore        → ignora .bak e .bak2
-index.html.bak    → backup original
-index.html.bak2   → backup versão awwwards
-
-
-SENHA ADMIN
-----------------------------------------
-
-Para acessar o modo admin:
-- Clique 3x no logo MTRX
-- Senha: mtrx2024
+index.html        -> app completo
+config.js         -> configuracao publica do Supabase
+supabase.sql      -> estrutura do banco
+README.md         -> visao geral
+ROADMAP.md        -> fases e proximos passos
+ADMIN_GUIDE.md    -> guia do modo admin
+MELHORIAS.md      -> melhorias feitas e recomendadas
+DEPLOY.md         -> deploy, Vercel, Supabase e DNS
+PROMPT_GUIDE.md   -> guia de uso para equipe criativa
+PLANO_FINAL.txt   -> este resumo
 
 
 ========================================
-MTRX LIBRARY v1 — 22/05/2026
+MTRX LIBRARY v1.1 — 22/05/2026

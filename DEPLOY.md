@@ -1,91 +1,85 @@
 # DEPLOY — MTRX LIBRARY
 
-Guia rápido para colocar o site no ar via Vercel.
+## Status
 
----
+Deploy ativo na Vercel:
 
-## Passo a passo (5 minutos)
+- Site: https://mtrx-library.vercel.app
+- Projeto: https://vercel.com/descubraia01-6342s-projects/mtrx-library
+- Repositorio: https://github.com/descubraia01-svg/mtrx-library
+- Branch de producao: `main`
 
-### 1. Acesse a Vercel
-[vercel.com/new](https://vercel.com/new)
+Cada `git push` na branch `main` dispara novo deploy automaticamente.
 
-### 2. Conecte o GitHub correto
-- Clique no dropdown da conta
-- Selecione ou adicione a conta **`descubraia01-svg`**
-- Se não aparecer: clique "Add GitHub Account" → autorize a conta no popup
-
-### 3. Selecione o repositório
-- Repositório: **`mtrx-library`**
-- Clique **Import**
-
-### 4. Configure o projeto
-- **Framework Preset:** Other
-- **Root Directory:** `./` (padrão)
-- **Build Command:** (vazio — HTML puro, sem build)
-- **Output Directory:** `./` (padrão)
-- Sem variáveis de ambiente por enquanto
-
-### 5. Deploy
-- Clique **Deploy**
-- Aguarde ~30 segundos
-- Site no ar em `mtrx-library.vercel.app` (ou similar)
-
----
-
-## Deploy automático (após primeiro deploy)
-
-Cada `git push` na branch `main` atualiza o site automaticamente:
+## Fluxo padrao de atualizacao
 
 ```bash
-# Fluxo padrão para atualizar
-cd ~/Documents/Claude/Projects/MTRX\ LIBRARY
+git status
 git add .
-git commit -m "descrição da mudança"
+git commit -m "descricao da mudanca"
 git push
-# Site atualiza em ~30s na Vercel
 ```
 
----
+Depois do push, a Vercel normalmente publica em poucos segundos.
 
-## Repositório atual
+## Configuracao atual
 
-- **GitHub:** `https://github.com/descubraia01-svg/mtrx-library`
-- **Branch:** `main`
-- **Commits:** 3 (MVP inicial, identidade, gitignore)
+```txt
+Framework Preset: Other
+Build Command: vazio
+Output Directory: ./
+Root Directory: ./
+```
 
----
+O projeto e HTML puro, entao nao precisa instalar dependencias nem rodar build.
 
 ## Supabase
 
-O app já está preparado para sincronizar com Supabase.
-
-1. Abra o projeto Supabase:
-   `https://supabase.com/dashboard/project/zqzdjcpaqtasiatbjxhs`
-2. Vá em **SQL Editor**
-3. Rode o arquivo `supabase.sql`
-4. Vá em **Project Settings → API**
-5. Copie a **anon public key**
-6. Cole a chave em `config.js`:
+O app usa `config.js` para apontar para o Supabase:
 
 ```js
 window.MTRX_SUPABASE = {
   url: 'https://zqzdjcpaqtasiatbjxhs.supabase.co',
-  anonKey: 'SUA_ANON_PUBLIC_KEY'
+  anonKey: 'sb_publishable_a7yRYgpUrUFgwIy7yIRphg_kJ4OKRzN'
 };
 ```
 
-Observação: como esta versão ainda é HTML puro, a configuração fica em
-`config.js`, não em variáveis de ambiente da Vercel. A anon key do Supabase é
-pública por desenho; o que protege dados de verdade são as regras RLS.
+Tabela principal:
+
+```txt
+mtrx_library_state
+```
+
+O arquivo `supabase.sql` guarda a estrutura usada no projeto.
+
+## Dominio
+
+O dominio principal `mtrx.com.br` nao deve ser apontado para este projeto, porque sera usado na landing page futura.
+
+Para a biblioteca, usar:
+
+```txt
+library.mtrx.com.br
+```
+
+Registro DNS necessario no Registro.br:
+
+```txt
+Tipo: CNAME
+Nome: library
+Valor: 15726c4eab95e25c.vercel-dns-017.com.
+```
+
+Quando o CNAME propagar, a Vercel valida o dominio automaticamente.
+
+## Links uteis
+
+- Novo projeto Vercel: https://vercel.com/new
+- Projeto atual na Vercel: https://vercel.com/descubraia01-6342s-projects/mtrx-library
+- Domains na Vercel: https://vercel.com/descubraia01-6342s-projects/mtrx-library/settings/domains
+- Supabase: https://supabase.com/dashboard/project/zqzdjcpaqtasiatbjxhs
+- Registro.br: https://registro.br/painel/dominios/?dominio=mtrx.com.br
 
 ---
 
-## Domínio próprio (opcional)
-
-1. Vercel → Settings → Domains
-2. Adicionar domínio: `mtrxlibrary.com` (ou similar)
-3. Configurar DNS no registrador
-
----
-
-*MTRX LIBRARY v1 — Deploy Guide — 22/05/2026*
+MTRX LIBRARY v1.1 — Deploy Guide — 22/05/2026

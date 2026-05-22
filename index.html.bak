@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTRX LIBRARY — Banco de Prompts</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --border: #222222;
+    --border-hover: #333333;
+    --accent: #FF4500;
+    --accent2: #FF6B35;
+    --accent-dim: rgba(255,69,0,0.08);
+    --text: #f0f0f0;
+    --text2: #888888;
+    --text3: #555555;
+    --red: #ff4444;
+    --green: #44ff88;
+    --tag-img: #7c3aed;
+    --tag-aud: #0891b2;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font: 'Inter', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  .logo span { color: var(--text2); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .admin-badge {
+    display: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .admin-badge.visible { display: block; }
+
+  #adminToggleBtn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  #adminToggleBtn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 64px 32px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero p {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* ── SEARCH & FILTERS ── */
+  .controls {
+    padding: 0 32px 32px;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+  }
+
+  #searchInput {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px 10px 40px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #searchInput:focus { border-color: var(--accent); }
+  #searchInput::placeholder { color: var(--text3); }
+
+  .filter-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+
+  /* ── FEATURED STRIP ── */
+  .featured-section {
+    padding: 0 32px 32px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .featured-strip {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .featured-chip {
+    background: var(--accent-dim);
+    border: 1px solid rgba(255,69,0,0.25);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .featured-chip:hover { background: rgba(255,69,0,0.18); border-color: var(--accent); }
+
+  /* ── CATEGORIES ── */
+  .main-content {
+    padding: 0 32px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .category-block {
+    margin-bottom: 48px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .category-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .cat-icon.img { background: rgba(124,58,237,0.15); }
+  .cat-icon.aud { background: rgba(8,145,178,0.15); }
+
+  .cat-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .cat-count {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .btn-add-cat {
+    display: none;
+    background: var(--bg2);
+    border: 1px dashed var(--border);
+    color: var(--text3);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .btn-add-cat:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── SUBCATEGORY ── */
+  .subcategory {
+    margin-bottom: 28px;
+  }
+
+  .sub-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .sub-name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  .btn-add-sub {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--text3);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .btn-add-sub:hover { color: var(--accent); background: var(--accent-dim); }
+
+  /* ── PROMPT CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+  }
+
+  .prompt-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: default;
+  }
+
+  .prompt-card:hover {
+    border-color: var(--border-hover);
+    background: var(--bg3);
+  }
+
+  .prompt-card.featured {
+    border-color: rgba(255,69,0,0.3);
+    background: linear-gradient(135deg, var(--bg3) 0%, rgba(255,69,0,0.04) 100%);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    flex: 1;
+    padding-right: 8px;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .btn-fav, .btn-edit, .btn-delete, .btn-copy {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .btn-fav { color: var(--text3); }
+  .btn-fav:hover { color: var(--accent); }
+  .btn-fav.active { color: var(--accent); }
+
+  .btn-copy { color: var(--text3); }
+  .btn-copy:hover { color: var(--accent2); }
+
+  .btn-edit { color: var(--text3); display: none; }
+  .btn-edit:hover { color: var(--accent); }
+
+  .btn-delete { color: var(--text3); display: none; }
+  .btn-delete:hover { color: var(--red); }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .card-prompt {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: #FF6B35;
+    line-height: 1.5;
+    word-break: break-word;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+
+  .card-prompt:hover { border-color: var(--accent2); }
+
+  .prompt-copied-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .tag.img { background: rgba(124,58,237,0.15); color: #a78bfa; }
+  .tag.aud { background: rgba(8,145,178,0.15); color: #67e8f9; }
+  .tag.featured-tag { background: rgba(255,69,0,0.12); color: var(--accent); }
+
+  /* ── ADMIN PANEL ── */
+  #adminPanel {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10,10,10,0.98);
+    border-top: 2px solid var(--accent);
+    padding: 14px 32px;
+    z-index: 200;
+    backdrop-filter: blur(16px);
+  }
+
+  #adminPanel.visible { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+  .admin-info {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 2px;
+    flex: 1;
+  }
+
+  .btn-exit-admin {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-exit-admin:hover { background: var(--red); color: #fff; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.visible { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .modal h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .modal h2 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: var(--font);
+  }
+
+  .form-group textarea { min-height: 80px; resize: vertical; }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--accent); }
+
+  .form-group select option { background: var(--bg2); }
+
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
+
+  .btn-save {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-save:hover { opacity: 0.85; }
+
+  /* ── PASSWORD MODAL ── */
+  #pwModal .modal { max-width: 380px; text-align: center; }
+  #pwModal .modal h2 { font-size: 16px; color: var(--text2); margin-bottom: 20px; }
+
+  #pwInput {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 4px;
+    outline: none;
+    font-family: var(--mono);
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  #pwInput:focus { border-color: var(--accent); }
+  #pwError { color: var(--red); font-size: 13px; min-height: 20px; margin-bottom: 12px; }
+
+  .btn-unlock {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-unlock:hover { opacity: 0.85; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text3);
+  }
+
+  .empty-state svg { margin-bottom: 16px; opacity: 0.3; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 80px;
+    right: 32px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.success { border-color: var(--green); color: var(--green); }
+  #toast.error { border-color: var(--red); color: var(--red); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .hero { padding: 40px 20px 24px; }
+    .controls { padding: 0 20px 24px; }
+    .featured-section, .main-content { padding-left: 20px; padding-right: 20px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    #adminPanel.visible { padding: 12px 20px; }
+  }
+
+  /* ── ADMIN MODE REVEALS ── */
+  body.admin-mode .btn-edit { display: flex !important; }
+  body.admin-mode .btn-delete { display: flex !important; }
+  body.admin-mode .btn-add-cat { display: flex !important; }
+  body.admin-mode .btn-add-sub { display: flex !important; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo"><span style="color:#FF4500">M</span><span style="color:#fff">TR</span><span style="color:#FF4500">X</span><span style="color:#555">_</span><span style="color:#fff">LIBRARY</span></div>
+  <div class="header-right">
+    <span class="admin-badge" id="adminBadge">● ADMIN MODE</span>
+    <button id="adminToggleBtn" onclick="openPasswordModal()">⚿ Admin</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Creative Prompt Database</div>
+  <h1>Liberdade de criar.<br><em>Sem bloqueio criativo.</em></h1>
+  <p>Um repositório vivo de prompts para imagem e áudio. Acesse os comandos certos na hora certa — e nunca mais fique parado sem ideia.</p>
+</section>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Buscar prompts..." oninput="renderAll()">
+  </div>
+  <div class="filter-btns">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('image', this)">🖼 Imagem</button>
+    <button class="filter-btn" onclick="setFilter('audio', this)">🎵 Áudio</button>
+    <button class="filter-btn" onclick="setFilter('featured', this)">⭐ Curadoria</button>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<div class="featured-section" id="featuredSection">
+  <div class="section-label">⭐ Curadoria do Time</div>
+  <div class="featured-strip" id="featuredStrip"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main-content" id="mainContent"></main>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+  <div class="admin-info">⚡ MODO ADMIN ATIVO — Você pode adicionar, editar e deletar prompts</div>
+  <button class="btn-exit-admin" onclick="exitAdmin()">Sair do Admin</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal">
+    <h2>🔐 Acesso Administrativo</h2>
+    <input type="password" id="pwInput" placeholder="••••••" onkeydown="if(event.key==='Enter') checkPassword()">
+    <div id="pwError"></div>
+    <button class="btn-unlock" onclick="checkPassword()">Desbloquear</button>
+    <br><br>
+    <button class="btn-cancel" onclick="closeModal('pwModal')" style="width:100%">Cancelar</button>
+  </div>
+</div>
+
+<!-- ADD/EDIT PROMPT MODAL -->
+<div class="modal-overlay" id="promptModal">
+  <div class="modal">
+    <h2 id="promptModalTitle">Adicionar <em>Prompt</em></h2>
+    <div class="form-group">
+      <label>Categoria</label>
+      <select id="formCategory">
+        <option value="image">🖼 Imagem</option>
+        <option value="audio">🎵 Áudio</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Subcategoria</label>
+      <input type="text" id="formSubcategory" placeholder="Ex: Ângulos de Câmera, Gêneros Musicais...">
+    </div>
+    <div class="form-group">
+      <label>Nome do Prompt</label>
+      <input type="text" id="formTitle" placeholder="Ex: Close-up, Sertanejo, Voz Grossa...">
+    </div>
+    <div class="form-group">
+      <label>Descrição</label>
+      <textarea id="formDesc" placeholder="O que este prompt faz? Qual o impacto criativo?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Prompt (texto copiável)</label>
+      <textarea id="formPrompt" placeholder="O texto exato do prompt para copiar e usar na IA..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('promptModal')">Cancelar</button>
+      <button class="btn-save" onclick="savePrompt()">Salvar Prompt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// ADMIN PASSWORD
+// ─────────────────────────────────────────────
+const ADMIN_CODE = 'mtrx2024';
+
+// ─────────────────────────────────────────────
+// DEFAULT DATA
+// ─────────────────────────────────────────────
+const DEFAULT_DATA = {
+  categories: [
+    {
+      id: 'image',
+      name: 'Prompts de Imagem',
+      type: 'image',
+      icon: '🖼',
+      subcategories: [
+        {
+          id: 'sub_angles',
+          name: 'Ângulos de Câmera',
+          prompts: [
+            {
+              id: 'p1',
+              title: 'Close-up',
+              desc: 'Visão de perto. Enfatiza emoção, detalhes faciais e textura. Cria conexão imediata com o sujeito.',
+              prompt: 'close-up shot, macro detail, facial focus, sharp eyes, 8k resolution, bokeh background',
+              featured: true
+            },
+            {
+              id: 'p2',
+              title: 'Wide Shot',
+              desc: 'Visão aberta. Mostra o ambiente completo e posiciona o sujeito no cenário.',
+              prompt: 'wide angle shot, establishing shot, full environment visible, cinematic composition',
+              featured: false
+            },
+            {
+              id: 'p3',
+              title: 'Bird\'s Eye View',
+              desc: 'Vista de cima. Ângulo aéreo que transmite grandiosidade e perspectiva única.',
+              prompt: 'bird\'s eye view, aerial perspective, top-down shot, overhead angle, dramatic composition',
+              featured: false
+            },
+            {
+              id: 'p4',
+              title: 'Low Angle',
+              desc: 'Câmera de baixo para cima. Transmite poder, autoridade e imponência do sujeito.',
+              prompt: 'low angle shot, worm\'s eye view, looking up, powerful perspective, dramatic hero angle',
+              featured: false
+            },
+            {
+              id: 'p5',
+              title: 'Portrait Close-up',
+              desc: 'Close focado no rosto. Ideal para redes sociais, capas e artes de artistas.',
+              prompt: 'portrait close-up, face detail, intense gaze, studio lighting, sharp focus, professional photography',
+              featured: true
+            }
+          ]
+        },
+        {
+          id: 'sub_ambience',
+          name: 'Ambientação',
+          prompts: [
+            {
+              id: 'p6',
+              title: 'Cinematic Lighting',
+              desc: 'Iluminação cinematográfica. Cria profundidade, drama e estética de filme.',
+              prompt: 'cinematic lighting, dramatic shadows, volumetric light rays, film grain, anamorphic lens flare',
+              featured: true
+            },
+            {
+              id: 'p7',
+              title: 'Neon Cyberpunk',
+              desc: 'Ambiente urbano futurista com luzes neon. Estética vibrante e moderna.',
+              prompt: 'neon cyberpunk atmosphere, purple and cyan lights, rainy streets, reflections, futuristic city, blade runner aesthetic',
+              featured: false
+            },
+            {
+              id: 'p8',
+              title: 'Stage Smoke & Lights',
+              desc: 'Palco com fumaça e luzes de show. Perfeito para artistas e performances.',
+              prompt: 'concert stage atmosphere, smoke machine effect, blue stage lights, spotlight, silhouette of crowd, live show energy',
+              featured: true
+            },
+            {
+              id: 'p9',
+              title: 'Golden Hour',
+              desc: 'Luz dourada do fim de tarde. Cria calor, nostalgia e beleza natural.',
+              prompt: 'golden hour lighting, warm sunset tones, soft natural light, lens flare, outdoor setting, magic hour',
+              featured: false
+            },
+            {
+              id: 'p10',
+              title: 'Studio Dark Background',
+              desc: 'Fundo escuro de estúdio. Destaca o sujeito com elegância e foco total.',
+              prompt: 'dark studio background, professional photography, single subject focus, dramatic key light, black backdrop',
+              featured: false
+            }
+          ]
+        },
+        {
+          id: 'sub_subjects',
+          name: 'Sujeitos & Composição',
+          prompts: [
+            {
+              id: 'p11',
+              title: 'Cantor com Microfone',
+              desc: 'Sujeito padrão para conteúdo musical. Âncora visual para qualquer cena de performance.',
+              prompt: 'singer holding a microphone, performing on stage, intense expression, sweat details, professional artist, music performance',
+              featured: true
+            },
+            {
+              id: 'p12',
+              title: 'DJ Behind Decks',
+              desc: 'DJ atrás dos equipamentos. Ideal para conteúdo de shows e eventos eletrônicos.',
+              prompt: 'DJ behind decks, turntables, mixing equipment, club lighting, hands on mixer, crowd in background',
+              featured: false
+            },
+            {
+              id: 'p13',
+              title: 'Artista Solo',
+              desc: 'Artista sozinho em foco total. Transmite protagonismo e identidade visual forte.',
+              prompt: 'solo artist portrait, strong presence, direct camera gaze, confident posture, professional lighting, iconic shot',
+              featured: false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'audio',
+      name: 'Prompts de Áudio',
+      type: 'audio',
+      icon: '🎵',
+      subcategories: [
+        {
+          id: 'sub_genres',
+          name: 'Gêneros Musicais',
+          prompts: [
+            {
+              id: 'p20',
+              title: 'Sertanejo',
+              desc: 'Gênero brasileiro com violão, acordeão e voz melódica. Combina tradição e apelo emocional.',
+              prompt: 'sertanejo style, acoustic guitar (violão), accordion rhythm, melodic Brazilian vocals, countryside soul, emotional lyrics',
+              featured: true
+            },
+            {
+              id: 'p21',
+              title: 'Sertanejo Universitário',
+              desc: 'Versão pop do sertanejo. Mais dançante, produção moderna, apelo jovem.',
+              prompt: 'sertanejo universitário, modern Brazilian country pop, upbeat rhythm, electric guitar, party vibes, youthful energy',
+              featured: false
+            },
+            {
+              id: 'p22',
+              title: 'Funk Brasileiro',
+              desc: 'Batida eletrônica característica. Energia alta, bass pesado, apelo urbano.',
+              prompt: 'Brazilian funk, heavy bass beat, 150 BPM, urban energy, Rio de Janeiro style, electronic beats, party atmosphere',
+              featured: false
+            },
+            {
+              id: 'p23',
+              title: 'Pagode',
+              desc: 'Ritmo brasileiro de raiz com pandeiro, cavaquinho e voz envolvente. Alegria e swing.',
+              prompt: 'pagode style, pandeiro percussion, cavaquinho guitar, samba rhythm, joyful Brazilian mood, group vocals',
+              featured: false
+            },
+            {
+              id: 'p24',
+              title: 'Trap BR',
+              desc: 'Trap com influência brasileira. Beats pesados, hi-hats rápidos e flow em português.',
+              prompt: 'Brazilian trap, heavy 808 bass, fast hi-hats, dark atmospheric beat, Portuguese rap flow, street energy',
+              featured: false
+            }
+          ]
+        },
+        {
+          id: 'sub_vocals',
+          name: 'Modulação Vocal',
+          prompts: [
+            {
+              id: 'p30',
+              title: 'Voz Grossa',
+              desc: 'Voz grave com autoridade. Adiciona peso, maturidade e presença ao vocal.',
+              prompt: 'deep voice, voz grossa, high bass resonance, authoritative tone, mature masculine voice, powerful delivery',
+              featured: true
+            },
+            {
+              id: 'p31',
+              title: 'Voz Suave & Melancólica',
+              desc: 'Voz delicada com emoção contida. Para baladas e músicas introspectivas.',
+              prompt: 'soft melancholic voice, gentle delivery, emotional vulnerability, breathy tone, heartbreak vibes, tender expression',
+              featured: false
+            },
+            {
+              id: 'p32',
+              title: 'Voz de Narrador',
+              desc: 'Voz clara e assertiva. Ideal para voice-overs, intros e locuções.',
+              prompt: 'narrator voice, clear articulation, deep authoritative tone, professional voice over, confident delivery, radio quality',
+              featured: false
+            },
+            {
+              id: 'p33',
+              title: 'Voz Aguda & Energética',
+              desc: 'Voz alta e vibrante. Transmite energia, alegria e dinamismo.',
+              prompt: 'high energy voice, bright and vibrant tone, upbeat delivery, youthful spirit, powerful projection, excitement',
+              featured: false
+            },
+            {
+              id: 'p34',
+              title: 'Coral / Vozes em Camadas',
+              desc: 'Múltiplas vozes sobrepostas. Cria profundidade e grandiosidade na produção.',
+              prompt: 'choir vocals, layered harmonies, multiple voices, epic choir effect, background vocal support, rich texture',
+              featured: false
+            }
+          ]
+        },
+        {
+          id: 'sub_mood',
+          name: 'Mood & Atmosfera',
+          prompts: [
+            {
+              id: 'p40',
+              title: 'Melancólico & Sad',
+              desc: 'Atmosfera de tristeza e reflexão. Para músicas que tocam fundo.',
+              prompt: 'melancholic mood, sad atmosphere, emotional depth, minor key, slow tempo, heartbreak energy, nostalgic feeling',
+              featured: false
+            },
+            {
+              id: 'p41',
+              title: 'Festivo & Animado',
+              desc: 'Energia de festa e celebração. Para músicas que fazem dançar.',
+              prompt: 'festive party energy, upbeat mood, celebration vibes, dance floor ready, high BPM, crowd pleaser',
+              featured: false
+            },
+            {
+              id: 'p42',
+              title: 'Romântico & Sensual',
+              desc: 'Clima íntimo e sedutor. Para músicas de amor e conexão emocional.',
+              prompt: 'romantic mood, sensual atmosphere, intimate setting, smooth rhythm, love song energy, tender emotion',
+              featured: false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let db = loadDB();
+let isAdmin = localStorage.getItem('mtrx_admin') === 'true';
+let currentFilter = 'all';
+let editingPromptRef = null; // {categoryId, subcategoryId, promptId}
+
+function loadDB() {
+  const saved = localStorage.getItem('mtrx_db');
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e) {}
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveDB() {
+  localStorage.setItem('mtrx_db', JSON.stringify(db));
+}
+
+function genId() {
+  return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+}
+
+// ─────────────────────────────────────────────
+// ADMIN
+// ─────────────────────────────────────────────
+function openPasswordModal() {
+  if (isAdmin) { exitAdmin(); return; }
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').textContent = '';
+  openModal('pwModal');
+  setTimeout(() => document.getElementById('pwInput').focus(), 100);
+}
+
+function checkPassword() {
+  const val = document.getElementById('pwInput').value;
+  if (val === ADMIN_CODE) {
+    isAdmin = true;
+    localStorage.setItem('mtrx_admin', 'true');
+    closeModal('pwModal');
+    activateAdmin();
+    toast('Modo Admin ativado ⚡', 'success');
+  } else {
+    document.getElementById('pwError').textContent = 'Código incorreto. Tente novamente.';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function activateAdmin() {
+  document.body.classList.add('admin-mode');
+  document.getElementById('adminBadge').classList.add('visible');
+  document.getElementById('adminPanel').classList.add('visible');
+  document.getElementById('adminToggleBtn').textContent = '⚿ Sair';
+}
+
+function exitAdmin() {
+  isAdmin = false;
+  localStorage.removeItem('mtrx_admin');
+  document.body.classList.remove('admin-mode');
+  document.getElementById('adminBadge').classList.remove('visible');
+  document.getElementById('adminPanel').classList.remove('visible');
+  document.getElementById('adminToggleBtn').textContent = '⚿ Admin';
+  toast('Modo Admin desativado');
+}
+
+// ─────────────────────────────────────────────
+// FILTERS
+// ─────────────────────────────────────────────
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function renderAll() {
+  renderFeatured();
+  renderCategories();
+}
+
+function renderFeatured() {
+  const strip = document.getElementById('featuredStrip');
+  const section = document.getElementById('featuredSection');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  const featured = [];
+  db.categories.forEach(cat => {
+    cat.subcategories.forEach(sub => {
+      sub.prompts.forEach(p => {
+        if (p.featured) featured.push({...p, catType: cat.type});
+      });
+    });
+  });
+
+  if (featured.length === 0 || currentFilter === 'featured') {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  strip.innerHTML = featured.map(p => `
+    <span class="featured-chip" onclick="scrollToPrompt('${p.id}')">${p.title}</span>
+  `).join('');
+}
+
+function renderCategories() {
+  const content = document.getElementById('mainContent');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  let html = '';
+  let totalVisible = 0;
+
+  db.categories.forEach(cat => {
+    if (currentFilter === 'image' && cat.type !== 'image') return;
+    if (currentFilter === 'audio' && cat.type !== 'audio') return;
+
+    let catHtml = '';
+    let catVisible = 0;
+
+    cat.subcategories.forEach(sub => {
+      const filtered = sub.prompts.filter(p => {
+        if (currentFilter === 'featured' && !p.featured) return false;
+        if (search && !p.title.toLowerCase().includes(search) &&
+            !p.desc.toLowerCase().includes(search) &&
+            !p.prompt.toLowerCase().includes(search)) return false;
+        return true;
+      });
+
+      if (filtered.length === 0 && currentFilter !== 'featured') return;
+
+      catVisible += filtered.length;
+      totalVisible += filtered.length;
+
+      catHtml += `
+        <div class="subcategory" id="sub_${sub.id}">
+          <div class="sub-header">
+            <div class="sub-name">${sub.name}</div>
+            ${isAdmin ? `<button class="btn-add-sub" onclick="openAddPrompt('${cat.id}','${sub.id}')">＋ Prompt</button>` : ''}
+          </div>
+          <div class="cards-grid">
+            ${filtered.map(p => renderCard(p, cat.id, sub.id)).join('')}
+          </div>
+        </div>
+      `;
+    });
+
+    if (!catHtml) return;
+
+    html += `
+      <div class="category-block">
+        <div class="category-header">
+          <div class="category-title">
+            <div class="cat-icon ${cat.type}">${cat.icon}</div>
+            <div>
+              <div class="cat-name">${cat.name}</div>
+              <div class="cat-count">${catVisible} prompts</div>
+            </div>
+          </div>
+          ${isAdmin ? `<button class="btn-add-cat" onclick="openAddCategory('${cat.id}')">＋ Nova subcategoria</button>` : ''}
+        </div>
+        ${catHtml}
+      </div>
+    `;
+  });
+
+  if (!html) {
+    html = `<div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <p>Nenhum prompt encontrado.<br>Tente outro termo ou categoria.</p>
+    </div>`;
+  }
+
+  content.innerHTML = html;
+}
+
+function renderCard(p, catId, subId) {
+  return `
+    <div class="prompt-card ${p.featured ? 'featured' : ''}" id="card_${p.id}">
+      <div class="card-top">
+        <div class="card-title">${p.title}</div>
+        <div class="card-actions">
+          <button class="btn-copy" title="Copiar prompt" onclick="copyPrompt('${p.id}', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          </button>
+          <button class="btn-fav ${p.featured ? 'active' : ''}" title="${p.featured ? 'Remover da curadoria' : 'Adicionar à curadoria'}" onclick="toggleFeatured('${catId}','${subId}','${p.id}')">
+            ${p.featured ? '★' : '☆'}
+          </button>
+          <button class="btn-edit" title="Editar" onclick="openEditPrompt('${catId}','${subId}','${p.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-delete" title="Deletar" onclick="deletePrompt('${catId}','${subId}','${p.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-desc">${p.desc}</div>
+      <div class="card-prompt" onclick="copyPromptText('${p.id}')" title="Clique para copiar">
+        ${p.prompt}
+        <span class="prompt-copied-msg" id="copied_${p.id}">Copiado!</span>
+      </div>
+      <div class="card-tags">
+        ${p.featured ? '<span class="tag featured-tag">★ Curadoria</span>' : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// COPY
+// ─────────────────────────────────────────────
+function getPromptById(id) {
+  for (const cat of db.categories) {
+    for (const sub of cat.subcategories) {
+      const p = sub.prompts.find(p => p.id === id);
+      if (p) return p;
+    }
+  }
+  return null;
+}
+
+function copyPromptText(id) {
+  const p = getPromptById(id);
+  if (!p) return;
+  navigator.clipboard.writeText(p.prompt).then(() => {
+    const el = document.getElementById('copied_' + id);
+    if (el) { el.style.opacity = '1'; setTimeout(() => el.style.opacity = '0', 1200); }
+  });
+}
+
+function copyPrompt(id, btn) {
+  const p = getPromptById(id);
+  if (!p) return;
+  navigator.clipboard.writeText(p.prompt).then(() => {
+    toast('Prompt copiado!', 'success');
+  });
+}
+
+// ─────────────────────────────────────────────
+// FEATURED TOGGLE
+// ─────────────────────────────────────────────
+function toggleFeatured(catId, subId, promptId) {
+  const cat = db.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const sub = cat.subcategories.find(s => s.id === subId);
+  if (!sub) return;
+  const p = sub.prompts.find(p => p.id === promptId);
+  if (!p) return;
+  p.featured = !p.featured;
+  saveDB();
+  renderAll();
+  toast(p.featured ? '★ Adicionado à curadoria' : 'Removido da curadoria', 'success');
+}
+
+// ─────────────────────────────────────────────
+// CRUD
+// ─────────────────────────────────────────────
+function openAddPrompt(catId, subId) {
+  editingPromptRef = { catId, subId, promptId: null };
+  document.getElementById('promptModalTitle').innerHTML = 'Adicionar <em>Prompt</em>';
+  document.getElementById('formCategory').value = catId;
+  document.getElementById('formSubcategory').value = '';
+  document.getElementById('formTitle').value = '';
+  document.getElementById('formDesc').value = '';
+  document.getElementById('formPrompt').value = '';
+
+  // set subname from existing
+  const cat = db.categories.find(c => c.id === catId);
+  if (cat) {
+    const sub = cat.subcategories.find(s => s.id === subId);
+    if (sub) document.getElementById('formSubcategory').value = sub.name;
+  }
+
+  openModal('promptModal');
+}
+
+function openEditPrompt(catId, subId, promptId) {
+  editingPromptRef = { catId, subId, promptId };
+  const cat = db.categories.find(c => c.id === catId);
+  const sub = cat?.subcategories.find(s => s.id === subId);
+  const p = sub?.prompts.find(p => p.id === promptId);
+  if (!p) return;
+
+  document.getElementById('promptModalTitle').innerHTML = 'Editar <em>Prompt</em>';
+  document.getElementById('formCategory').value = catId;
+  document.getElementById('formSubcategory').value = sub.name;
+  document.getElementById('formTitle').value = p.title;
+  document.getElementById('formDesc').value = p.desc;
+  document.getElementById('formPrompt').value = p.prompt;
+
+  openModal('promptModal');
+}
+
+function savePrompt() {
+  const title = document.getElementById('formTitle').value.trim();
+  const desc = document.getElementById('formDesc').value.trim();
+  const prompt = document.getElementById('formPrompt').value.trim();
+  const catId = document.getElementById('formCategory').value;
+  const subName = document.getElementById('formSubcategory').value.trim();
+
+  if (!title || !prompt) {
+    toast('Preencha pelo menos o Nome e o Prompt', 'error');
+    return;
+  }
+
+  const cat = db.categories.find(c => c.id === catId);
+  if (!cat) return;
+
+  const ref = editingPromptRef;
+
+  if (ref.promptId) {
+    // EDIT
+    const sub = cat.subcategories.find(s => s.id === ref.subId);
+    if (!sub) return;
+    const p = sub.prompts.find(p => p.id === ref.promptId);
+    if (!p) return;
+    p.title = title;
+    p.desc = desc;
+    p.prompt = prompt;
+    toast('Prompt atualizado ✓', 'success');
+  } else {
+    // ADD
+    let sub = cat.subcategories.find(s => s.id === ref.subId);
+    if (!sub) {
+      // create new sub
+      sub = { id: genId(), name: subName || 'Nova Subcategoria', prompts: [] };
+      cat.subcategories.push(sub);
+    }
+    sub.prompts.push({
+      id: genId(),
+      title,
+      desc,
+      prompt,
+      featured: false
+    });
+    toast('Prompt adicionado ✓', 'success');
+  }
+
+  saveDB();
+  closeModal('promptModal');
+  renderAll();
+}
+
+function deletePrompt(catId, subId, promptId) {
+  if (!confirm('Deletar este prompt? Esta ação não pode ser desfeita.')) return;
+  const cat = db.categories.find(c => c.id === catId);
+  const sub = cat?.subcategories.find(s => s.id === subId);
+  if (!sub) return;
+  sub.prompts = sub.prompts.filter(p => p.id !== promptId);
+  saveDB();
+  renderAll();
+  toast('Prompt deletado', 'error');
+}
+
+// ─────────────────────────────────────────────
+// SCROLL TO
+// ─────────────────────────────────────────────
+function scrollToPrompt(id) {
+  const el = document.getElementById('card_' + id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.borderColor = 'var(--accent)';
+    setTimeout(() => el.style.borderColor = '', 1500);
+  }
+}
+
+// ─────────────────────────────────────────────
+// MODALS
+// ─────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('visible');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('visible');
+}
+
+// close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = '', 2500);
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+if (isAdmin) activateAdmin();
+renderAll();
+</script>
+</body>
+</html>

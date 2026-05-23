@@ -1,0 +1,27 @@
+MTRX LIBRARY - ACESSO
+
+Link do sistema:
+https://library.mtrx.com.br
+
+Acesso normal:
+Abrir o link e escolher a secao:
+- Som
+- Imagem
+- Video
+
+Acesso ADM:
+1. Abrir: https://library.mtrx.com.br
+2. Clicar em "Admin"
+3. Login/perfil: Admin
+4. Senha: mtrx2024
+
+No modo ADM da para:
+- Adicionar prompts
+- Editar prompts
+- Adicionar URL ou arquivo de referencia
+- Marcar curadoria
+- Exportar backup JSON/TXT
+
+Observacao:
+Arquivos pequenos de audio, imagem e video podem ser enviados direto no cadastro do prompt.
+Para videos grandes, usar URL publica como referencia.

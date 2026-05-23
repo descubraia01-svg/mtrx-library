@@ -77,7 +77,14 @@
     animation: sdown 0.5s ease forwards 0.45s;
   }
   @keyframes sdown { to { opacity: 1; transform: translateY(0); } }
-  .logo { font-size: 17px; font-weight: 800; letter-spacing: 5px; font-family: var(--mono); display: flex; align-items: center; }
+  .logo {
+    font-size: 15px; font-weight: 800; letter-spacing: 5px; font-family: var(--mono);
+    display: flex; align-items: center; gap: 10px; color: var(--text);
+  }
+  .logo img {
+    width: 30px; height: 30px; object-fit: cover; border-radius: 6px;
+    box-shadow: 0 0 18px rgba(255,69,0,0.18);
+  }
   .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
   .admin-badge { display: none; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 2px; padding: 4px 10px; border-radius: 4px; }
   .admin-badge.visible { display: block; }
@@ -91,40 +98,110 @@
 
   /* SECTION HOME */
   .section-home {
-    padding: 42px 40px 80px; max-width: 1180px; margin: 0 auto;
-    min-height: calc(100vh - 78px); display: flex; align-items: center;
+    padding: 42px 40px 80px; max-width: 1240px; margin: 0 auto;
+    min-height: calc(100vh - 78px); display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 34px;
     opacity: 0; transform: translateY(24px);
     animation: sup 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.6s;
   }
-  .section-grid { display: grid; grid-template-columns: 1fr; gap: 26px; width: 100%; }
+  .home-intro {
+    width: 100%; display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 12px; margin-top: -10px;
+  }
+  .home-symbol {
+    width: clamp(84px, 12vw, 132px); height: clamp(84px, 12vw, 132px);
+    object-fit: cover; border-radius: 22px;
+    box-shadow: 0 0 44px rgba(255,69,0,0.16);
+  }
+  .home-title {
+    font-size: clamp(42px, 7vw, 86px); line-height: 0.9; font-weight: 800;
+    letter-spacing: 0; text-transform: lowercase;
+  }
+  .home-title span { color: var(--accent); }
+  .home-sub {
+    font-size: 11px; color: var(--text3); letter-spacing: 4px;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .section-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; width: 100%; }
   .section-card {
-    min-height: 176px; border-radius: 18px; background: rgba(10,10,10,0.86);
-    border: 2px solid var(--section-color); color: var(--text);
-    box-shadow: 0 0 28px color-mix(in srgb, var(--section-color) 36%, transparent),
+    min-height: 320px; border-radius: 18px; background: rgba(10,10,10,0.9);
+    border: 1.5px solid rgba(255,69,0,0.78); color: var(--text);
+    box-shadow: 0 0 26px rgba(255,69,0,0.16),
                 inset 0 0 36px rgba(255,255,255,0.02);
-    display: flex; align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: stretch; justify-content: space-between;
+    gap: 22px; padding: 24px;
     cursor: none; transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
     position: relative; overflow: hidden;
   }
   .section-card::before {
-    content: ''; position: absolute; inset: -40%; opacity: 0.18;
-    background: radial-gradient(circle at 70% 30%, var(--section-color), transparent 46%);
+    content: ''; position: absolute; inset: -25%; opacity: 0.22;
+    background:
+      radial-gradient(circle at 65% 18%, rgba(255,107,53,0.95), transparent 34%),
+      linear-gradient(145deg, rgba(255,69,0,0.12), transparent 48%);
   }
   .section-card:hover {
     transform: translateY(-3px);
     background: rgba(18,18,18,0.94);
-    box-shadow: 0 0 42px color-mix(in srgb, var(--section-color) 44%, transparent),
+    box-shadow: 0 0 42px rgba(255,69,0,0.25),
                 inset 0 0 42px rgba(255,255,255,0.03);
   }
-  .section-card span {
-    position: relative; z-index: 1; background: #fff; color: #000;
-    padding: 13px 34px; border-radius: 18px;
-    font-size: clamp(26px, 6vw, 42px); font-weight: 800; letter-spacing: 0;
-    text-transform: uppercase; line-height: 1;
+  .section-card-label {
+    position: relative; z-index: 1; display: inline-flex; align-self: flex-start;
+    background: #fff; color: #000; padding: 12px 24px; border-radius: 16px;
+    font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: 0;
+    text-transform: uppercase; line-height: 1; box-shadow: 0 16px 34px rgba(0,0,0,0.35);
   }
-  .section-card.songs { --section-color: var(--blue); }
-  .section-card.images { --section-color: var(--accent2); }
-  .section-card.videos { --section-color: #ff3ea5; }
+  .section-card-meta {
+    position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; color: rgba(255,255,255,0.48); font-size: 10px; letter-spacing: 2.5px;
+    text-transform: uppercase; font-family: var(--mono);
+  }
+  .section-preview {
+    position: relative; z-index: 1; min-height: 148px; border-radius: 14px;
+    border: 1px solid rgba(255,69,0,0.28); background: rgba(255,69,0,0.055);
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+  }
+  .section-preview::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent 42%);
+    pointer-events: none;
+  }
+  .waveform { display: flex; align-items: center; gap: 8px; height: 86px; }
+  .waveform i {
+    display: block; width: 8px; border-radius: 20px; background: var(--accent);
+    box-shadow: 0 0 22px rgba(255,69,0,0.35);
+  }
+  .waveform i:nth-child(1) { height: 30px; opacity: .45; }
+  .waveform i:nth-child(2) { height: 62px; opacity: .72; }
+  .waveform i:nth-child(3) { height: 86px; }
+  .waveform i:nth-child(4) { height: 48px; opacity: .62; }
+  .waveform i:nth-child(5) { height: 74px; opacity: .85; }
+  .waveform i:nth-child(6) { height: 38px; opacity: .5; }
+  .image-stack { width: 72%; height: 86px; position: relative; }
+  .image-stack i {
+    position: absolute; inset: 0; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
+    background:
+      linear-gradient(135deg, rgba(255,69,0,0.38), rgba(255,255,255,0.06)),
+      linear-gradient(45deg, #111, #1c1c1c);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  }
+  .image-stack i:nth-child(1) { transform: translate(-18px, 14px) rotate(-5deg); opacity: .58; }
+  .image-stack i:nth-child(2) { transform: translate(16px, -10px) rotate(4deg); opacity: .78; }
+  .image-stack i:nth-child(3) { transform: none; }
+  .video-frame {
+    width: 76%; aspect-ratio: 16 / 9; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
+    background:
+      linear-gradient(90deg, rgba(255,69,0,0.18), transparent 20%, transparent 80%, rgba(255,69,0,0.18)),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 4px, transparent 4px 18px),
+      #0f0f0f;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .video-frame i {
+    width: 58px; height: 58px; border-radius: 50%; border: 1px solid var(--accent);
+    display: flex; align-items: center; justify-content: center; color: var(--accent);
+    font-style: normal; font-size: 22px; padding-left: 4px;
+    box-shadow: 0 0 28px rgba(255,69,0,0.28);
+  }
 
   header,
   .section-home,
@@ -492,6 +569,18 @@
   .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
   .form-group select option { background: #111; }
   .form-hint { font-size: 11px; color: var(--text3); margin-top: 6px; letter-spacing: 0.3px; }
+  .reference-upload {
+    margin-top: 10px; display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; border: 1px dashed rgba(255,69,0,0.28); border-radius: 10px;
+    padding: 10px 12px; background: rgba(255,69,0,0.04);
+  }
+  .reference-upload input { display: none; }
+  .reference-upload button {
+    background: var(--accent); border: none; color: #fff; border-radius: 8px;
+    padding: 8px 12px; font-family: var(--font); font-weight: 700; cursor: none;
+  }
+  .reference-upload span { color: var(--text3); font-size: 11px; line-height: 1.4; }
+  .reference-upload.has-file span { color: var(--accent2); }
   .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
   .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text2); padding: 11px 22px; border-radius: var(--radius-sm); font-size: 14px; cursor: none; transition: all 0.2s; font-family: var(--font); }
   .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
@@ -542,12 +631,26 @@
     #cursor, #cursor-ring { display: none; }
     header { padding: 14px 18px; gap: 14px; align-items: flex-start; }
     .logo { font-size: 14px; letter-spacing: 3px; max-width: calc(100vw - 150px); overflow-wrap: anywhere; }
+    .logo img { width: 26px; height: 26px; }
     #adminToggleBtn { padding: 7px 12px; font-size: 11px; }
     .admin-badge { letter-spacing: 1px; padding: 4px 8px; }
-    .section-home { padding: 30px 18px 70px; min-height: calc(100vh - 60px); }
-    .section-grid { gap: 18px; }
-    .section-card { min-height: 132px; border-radius: 16px; }
-    .section-card span { font-size: clamp(25px, 9vw, 38px); padding: 12px 28px; border-radius: 16px; }
+    .section-home { padding: 30px 18px 70px; min-height: calc(100vh - 60px); gap: 26px; }
+    .home-symbol { width: 86px; height: 86px; border-radius: 18px; }
+    .home-sub { font-size: 9px; letter-spacing: 3px; }
+    .section-grid { grid-template-columns: 1fr; gap: 18px; }
+    .section-card { min-height: 178px; border-radius: 16px; padding: 18px; gap: 14px; }
+    .section-card-label { font-size: clamp(25px, 9vw, 36px); padding: 11px 22px; border-radius: 15px; }
+    .section-preview { min-height: 76px; }
+    .waveform { height: 54px; }
+    .waveform i { width: 7px; }
+    .waveform i:nth-child(1) { height: 22px; }
+    .waveform i:nth-child(2) { height: 38px; }
+    .waveform i:nth-child(3) { height: 54px; }
+    .waveform i:nth-child(4) { height: 30px; }
+    .waveform i:nth-child(5) { height: 46px; }
+    .waveform i:nth-child(6) { height: 26px; }
+    .image-stack { height: 56px; }
+    .video-frame i { width: 42px; height: 42px; font-size: 16px; }
     .hero { padding: 16px 18px 12px; }
     .hero-top { gap: 10px; margin-bottom: 10px; }
     .hero-tag { letter-spacing: 2.4px; gap: 10px; }
@@ -619,7 +722,8 @@
 <!-- HEADER -->
 <header>
   <div class="logo">
-    <span style="color:#FF4500">M</span><span style="color:#fff">TR</span><span style="color:#FF4500">X</span><span style="color:#2a2a2a">_</span><span style="color:#fff">LIBRARY</span>
+    <img src="assets/mtrx-symbol.png" alt="MTRX">
+    <span>LIBRARY</span>
   </div>
   <div class="header-right">
     <span class="admin-badge" id="adminBadge">● ADMIN</span>
@@ -629,10 +733,33 @@
 
 <!-- SECTION HOME -->
 <section class="section-home" aria-label="Escolha uma secao">
+  <div class="home-intro">
+    <img class="home-symbol" src="assets/mtrx-symbol.png" alt="MTRX">
+    <h1 class="home-title">library<span>.</span></h1>
+    <p class="home-sub">prompts por midia</p>
+  </div>
   <div class="section-grid">
-    <button class="section-card songs" onclick="enterSection('audio')"><span>Songs</span></button>
-    <button class="section-card images" onclick="enterSection('image')"><span>Imagens</span></button>
-    <button class="section-card videos" onclick="enterSection('video')"><span>Vídeos</span></button>
+    <button class="section-card songs" onclick="enterSection('audio')">
+      <span class="section-card-meta">Audio prompts <small>01</small></span>
+      <span class="section-preview" aria-hidden="true">
+        <span class="waveform"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      </span>
+      <span class="section-card-label">Som</span>
+    </button>
+    <button class="section-card images" onclick="enterSection('image')">
+      <span class="section-card-meta">Visual prompts <small>02</small></span>
+      <span class="section-preview" aria-hidden="true">
+        <span class="image-stack"><i></i><i></i><i></i></span>
+      </span>
+      <span class="section-card-label">Imagem</span>
+    </button>
+    <button class="section-card videos" onclick="enterSection('video')">
+      <span class="section-card-meta">Motion prompts <small>03</small></span>
+      <span class="section-preview" aria-hidden="true">
+        <span class="video-frame"><i>▶</i></span>
+      </span>
+      <span class="section-card-label">Vídeo</span>
+    </button>
   </div>
 </section>
 
@@ -795,7 +922,12 @@
     <div class="form-group">
       <label>URL da referência</label>
       <input type="url" id="formReferenceUrl" placeholder="https://...">
-      <div class="form-hint">Use uma URL pública. Upload direto no Supabase Storage entra na próxima fase.</div>
+      <div class="reference-upload" id="referenceUploadBox">
+        <span id="referenceUploadName">Ou envie um arquivo pequeno de áudio, imagem ou vídeo.</span>
+        <button type="button" onclick="document.getElementById('formReferenceFile').click()">Enviar arquivo</button>
+        <input type="file" id="formReferenceFile" accept="audio/*,image/*,video/*" onchange="handleReferenceFile(event)">
+      </div>
+      <div class="form-hint">URL pública é ideal para arquivos grandes. Arquivo direto funciona melhor para referências leves.</div>
     </div>
     <div class="form-group">
       <label>Nome da referência</label>
@@ -885,7 +1017,7 @@ function escapeHTML(str) {
 function safeReferenceUrl(url) {
   if (!url) return '';
   const value = String(url).trim();
-  if (/^(https?:\/\/|\/|\.\/)/i.test(value)) return value;
+  if (/^(https?:\/\/|\/|\.\/|data:(audio|image|video)\/)/i.test(value)) return value;
   return '';
 }
 
@@ -1102,6 +1234,7 @@ let deletedPromptCache = null;
 let undoTimerInterval = null;
 let currentComboId = null;
 let tagsExpanded = false;
+let pendingReferenceDataUrl = '';
 
 function loadDB() {
   const s = localStorage.getItem('mtrx_db');
@@ -1594,6 +1727,46 @@ function flashCard(id) {
   if (card) { card.classList.add('copy-flash'); setTimeout(()=>card.classList.remove('copy-flash'), 380); }
 }
 
+// ── REFERENCES ──
+function resetReferenceUpload() {
+  pendingReferenceDataUrl = '';
+  const fileInput = document.getElementById('formReferenceFile');
+  const label = document.getElementById('referenceUploadName');
+  const box = document.getElementById('referenceUploadBox');
+  if (fileInput) fileInput.value = '';
+  if (label) label.textContent = 'Ou envie um arquivo pequeno de áudio, imagem ou vídeo.';
+  if (box) box.classList.remove('has-file');
+}
+
+function handleReferenceFile(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!/^(audio|image|video)\//.test(file.type)) {
+    toast('Arquivo precisa ser áudio, imagem ou vídeo', 'error');
+    resetReferenceUpload();
+    return;
+  }
+  if (file.size > 4 * 1024 * 1024) {
+    toast('Arquivo grande demais. Use uma URL pública.', 'error');
+    resetReferenceUpload();
+    return;
+  }
+  const mediaType = file.type.split('/')[0];
+  document.getElementById('formReferenceType').value = mediaType;
+  if (!document.getElementById('formReferenceLabel').value.trim()) {
+    document.getElementById('formReferenceLabel').value = file.name;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    pendingReferenceDataUrl = String(reader.result || '');
+    document.getElementById('formReferenceUrl').value = pendingReferenceDataUrl;
+    document.getElementById('referenceUploadName').textContent = file.name;
+    document.getElementById('referenceUploadBox').classList.add('has-file');
+  };
+  reader.onerror = () => toast('Não consegui carregar esse arquivo', 'error');
+  reader.readAsDataURL(file);
+}
+
 // ── FEATURED ──
 function toggleFeatured(catId, subId, promptId) {
   const cat = db.categories.find(c=>c.id===catId);
@@ -1616,6 +1789,7 @@ function openAddPrompt(catId, subId) {
   document.getElementById('formReferenceType').value = catId === 'audio' ? 'audio' : catId === 'image' ? 'image' : catId === 'video' ? 'video' : '';
   document.getElementById('formReferenceUrl').value = '';
   document.getElementById('formReferenceLabel').value = '';
+  resetReferenceUpload();
   const cat = db.categories.find(c=>c.id===catId);
   const sub = cat?.subcategories.find(s=>s.id===subId);
   document.getElementById('formSubcategory').value = sub ? sub.name : '';
@@ -1638,6 +1812,7 @@ function openEditPrompt(catId, subId, promptId) {
   document.getElementById('formReferenceType').value = p.referenceType || '';
   document.getElementById('formReferenceUrl').value = p.referenceUrl || '';
   document.getElementById('formReferenceLabel').value = p.referenceLabel || '';
+  resetReferenceUpload();
   openModal('promptModal');
 }
 
@@ -1647,6 +1822,7 @@ function openAddCategory(catId) {
   document.getElementById('formCategory').value = catId;
   ['formSubcategory','formTitle','formDesc','formPrompt','formTags','formReferenceUrl','formReferenceLabel'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('formReferenceType').value = catId === 'audio' ? 'audio' : catId === 'image' ? 'image' : catId === 'video' ? 'video' : '';
+  resetReferenceUpload();
   openModal('promptModal');
 }
 
@@ -1663,7 +1839,7 @@ function savePrompt() {
   const referenceLabel = document.getElementById('formReferenceLabel').value.trim();
   if (!title || !prompt) { toast('Preencha Nome e Prompt','error'); return; }
   if (document.getElementById('formReferenceUrl').value.trim() && !referenceUrl) {
-    toast('Use uma URL de referência começando com http:// ou https://','error');
+    toast('Use URL http/https ou envie um arquivo válido','error');
     return;
   }
   const cat = db.categories.find(c=>c.id===catId); if (!cat) return;

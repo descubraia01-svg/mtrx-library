@@ -422,6 +422,12 @@
   .btn-fav.active { color: var(--accent); }
   .btn-copy { color: var(--text3); }
   .btn-copy:hover { color: var(--accent2); transform: scale(1.12); }
+  .btn-dup, .btn-move {
+    color: var(--text3); display: none; background: transparent; border: none;
+    cursor: none; padding: 5px; border-radius: 5px; transition: all 0.18s;
+    font-size: 12px; line-height: 1;
+  }
+  .btn-dup:hover, .btn-move:hover { color: var(--accent2); transform: translateY(-1px); }
   .btn-edit { color: var(--text3); display: none; }
   .btn-edit:hover { color: var(--accent); }
   .btn-delete { color: var(--text3); display: none; }
@@ -506,6 +512,14 @@
   .tag.featured-tag { background: rgba(255,69,0,0.1); color: var(--accent); }
   .tag.custom-tag { background: rgba(255,255,255,0.05); color: var(--text3); border: 1px solid var(--border); }
   .tag.custom-tag.active { background: rgba(255,69,0,0.08); color: var(--accent); border-color: rgba(255,69,0,0.3); }
+  .tag.status-tag { display: none; background: rgba(68,255,136,0.08); color: var(--green); border: 1px solid rgba(68,255,136,0.18); }
+  body.admin-mode .tag.status-tag { display: inline-flex; }
+  .admin-note {
+    display: none; margin-top: 10px; padding: 9px 11px; border-radius: 8px;
+    border: 1px dashed rgba(255,69,0,0.22); color: var(--text3);
+    font-size: 11px; line-height: 1.5; background: rgba(255,69,0,0.035);
+  }
+  body.admin-mode .admin-note { display: block; }
 
   /* ADMIN PANEL */
   #adminPanel {
@@ -569,6 +583,7 @@
   .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
   .form-group select option { background: #111; }
   .form-hint { font-size: 11px; color: var(--text3); margin-top: 6px; letter-spacing: 0.3px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .reference-upload {
     margin-top: 10px; display: flex; align-items: center; justify-content: space-between;
     gap: 10px; border: 1px dashed rgba(255,69,0,0.28); border-radius: 10px;
@@ -581,6 +596,18 @@
   }
   .reference-upload span { color: var(--text3); font-size: 11px; line-height: 1.4; }
   .reference-upload.has-file span { color: var(--accent2); }
+  .prompt-preview {
+    display: none; margin-top: 16px; border: 1px solid rgba(255,69,0,0.18);
+    border-radius: 12px; padding: 14px; background: rgba(255,69,0,0.035);
+  }
+  .prompt-preview.visible { display: block; }
+  .prompt-preview-title { font-size: 12px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+  .prompt-preview-meta { font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .prompt-preview-code {
+    font-family: var(--mono); color: var(--accent2); font-size: 11px; line-height: 1.55;
+    background: #0b0b0b; border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    word-break: break-word;
+  }
   .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
   .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text2); padding: 11px 22px; border-radius: var(--radius-sm); font-size: 14px; cursor: none; transition: all 0.2s; font-family: var(--font); }
   .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
@@ -685,6 +712,7 @@
     .prompt-card { padding: 16px; }
     .card-actions { gap: 2px; }
     .modal { padding: 26px 20px; border-radius: 12px; }
+    .form-row { grid-template-columns: 1fr; gap: 0; }
     .modal-footer { flex-direction: column-reverse; }
     .btn-save, .btn-cancel { width: 100%; }
     #adminPanel.visible { padding: 12px 20px; }
@@ -709,6 +737,8 @@
   /* ADMIN REVEALS */
   body.admin-mode .btn-edit { display: flex !important; }
   body.admin-mode .btn-delete { display: flex !important; }
+  body.admin-mode .btn-dup { display: flex !important; }
+  body.admin-mode .btn-move { display: flex !important; }
   body.admin-mode .btn-add-cat { display: flex !important; }
   body.admin-mode .btn-add-sub { display: flex !important; }
 </style>
@@ -850,6 +880,8 @@
   <button class="btn-admin-action export" onclick="exportTXT()">↓ Exportar TXT</button>
   <button class="btn-admin-action import" onclick="triggerImport()">↑ Importar JSON</button>
   <button class="btn-admin-action" onclick="openComboBuilder()">⚡ Novo Combo</button>
+  <button class="btn-admin-action" onclick="exportLatestLocalBackup()">Backup Local</button>
+  <button class="btn-admin-action" onclick="openDiagnostics()">Diagnóstico</button>
   <button class="btn-exit-admin" onclick="exitAdmin()">Sair</button>
   <input type="file" id="importFileInput" accept=".json" onchange="importJSON(event)">
 </div>
@@ -909,6 +941,20 @@
       <input type="text" id="formTags" placeholder="Ex: capa, reels, artista, funk, Suno">
       <div class="form-hint">Tags ajudam a filtrar rapidamente. Use termos curtos e diretos.</div>
     </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Status</label>
+        <select id="formStatus">
+          <option value="testado">Testado</option>
+          <option value="novo">Novo</option>
+          <option value="revisao">Em revisão</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nota interna</label>
+        <input type="text" id="formInternalNote" placeholder="Somente admin">
+      </div>
+    </div>
     <div class="form-group">
       <label>Referência</label>
       <select id="formReferenceType">
@@ -933,9 +979,27 @@
       <label>Nome da referência</label>
       <input type="text" id="formReferenceLabel" placeholder="Ex: Exemplo trap dark, capa editorial, preview lipsync">
     </div>
+    <div class="prompt-preview" id="promptPreview">
+      <div class="prompt-preview-title" id="previewTitle">Preview</div>
+      <div class="prompt-preview-meta" id="previewMeta">Sem dados</div>
+      <div class="prompt-preview-code" id="previewPrompt"></div>
+    </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('promptModal')">Cancelar</button>
+      <button class="btn-cancel" onclick="updatePromptPreview()">Preview</button>
       <button class="btn-save" onclick="savePrompt()">Salvar Prompt</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGNOSTIC MODAL -->
+<div class="modal-overlay" id="diagnosticModal">
+  <div class="modal">
+    <h2>Diagnóstico <em>Interno</em></h2>
+    <div class="combo-parts" id="diagnosticReport"></div>
+    <div class="modal-footer" style="margin-top:16px">
+      <button class="btn-cancel" onclick="closeModal('diagnosticModal')">Fechar</button>
+      <button class="btn-save" onclick="copyDiagnostics()">Copiar</button>
     </div>
   </div>
 </div>
@@ -1171,6 +1235,10 @@ let syncTimer = null;
 function normalizeDB(data) {
   const normalized = data && data.categories ? data : JSON.parse(JSON.stringify(DEFAULT_DATA));
   if (!normalized.combos) normalized.combos = JSON.parse(JSON.stringify(DEFAULT_DATA.combos));
+  normalized.categories.forEach(cat => cat.subcategories.forEach(sub => sub.prompts.forEach(p => {
+    if (!p.status) p.status = p.featured ? 'testado' : 'novo';
+    if (!p.internalNote) p.internalNote = '';
+  })));
   return normalized;
 }
 
@@ -1235,6 +1303,8 @@ let undoTimerInterval = null;
 let currentComboId = null;
 let tagsExpanded = false;
 let pendingReferenceDataUrl = '';
+let pendingReferenceFile = null;
+let lastDiagnosticText = '';
 
 function loadDB() {
   const s = localStorage.getItem('mtrx_db');
@@ -1245,9 +1315,18 @@ function loadDB() {
 }
 function saveDB() {
   localStorage.setItem('mtrx_db', JSON.stringify(db));
+  pushLocalBackup('auto');
   saveDBToSupabase(db);
 }
 function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+function pushLocalBackup(reason='auto') {
+  try {
+    const backups = JSON.parse(localStorage.getItem('mtrx_backups') || '[]');
+    backups.unshift({ at: new Date().toISOString(), reason, data: db });
+    localStorage.setItem('mtrx_backups', JSON.stringify(backups.slice(0, 10)));
+  } catch(e) {}
+}
 
 function getSectionMeta(type) {
   return {
@@ -1389,6 +1468,20 @@ function exportTXT() {
   toast('Exportado em TXT ↓','success');
 }
 
+function exportLatestLocalBackup() {
+  let backups = [];
+  try { backups = JSON.parse(localStorage.getItem('mtrx_backups') || '[]'); } catch(e) {}
+  const payload = backups[0]?.data || db;
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  a.href = url; a.download = 'mtrx-library-backup-local-' + d + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('Backup local exportado ↓','success');
+}
+
 function triggerImport() {
   document.getElementById('importFileInput').click();
 }
@@ -1406,6 +1499,7 @@ function importJSON(event) {
       const total = parsed.categories.reduce((acc, cat) =>
         acc + cat.subcategories.reduce((a2, sub) => a2 + sub.prompts.length, 0), 0);
       if (confirm('Importar banco com ' + total + ' prompts?\n\nIsso vai SUBSTITUIR o banco atual. Faça um backup antes se necessário.')) {
+        pushLocalBackup('antes-importacao');
         db = parsed; saveDB(); renderAll();
         toast('Banco importado com sucesso (' + total + ' prompts) ✓','success');
       }
@@ -1480,7 +1574,12 @@ function promptMatches(p, cat, search) {
   if (currentFilter === 'video' && cat.type !== 'video') return false;
   if (currentFilter === 'featured' && !p.featured) return false;
   if (activeTag && (!p.tags || !p.tags.map(t=>t.toLowerCase()).includes(activeTag.toLowerCase()))) return false;
-  if (search && !p.title.toLowerCase().includes(search) && !p.desc.toLowerCase().includes(search) && !p.prompt.toLowerCase().includes(search) && !(p.tags||[]).join(' ').toLowerCase().includes(search)) return false;
+  const searchable = [
+    p.title, p.desc, p.prompt, p.status,
+    isAdmin ? p.internalNote : '',
+    ...(p.tags || [])
+  ].join(' ').toLowerCase();
+  if (search && !searchable.includes(search)) return false;
   return true;
 }
 
@@ -1620,6 +1719,7 @@ function renderCategories() {
 }
 
 function renderCard(p, catId, subId, catType) {
+  const index = (db.categories.find(c=>c.id===catId)?.subcategories.find(s=>s.id===subId)?.prompts || []).findIndex(item => item.id === p.id);
   const tags = (p.tags || []).map(t =>
     `<span class="tag custom-tag ${activeTag===t?'active':''}" onclick="setTag('${escapeHTML(t)}')">${escapeHTML(t)}</span>`
   ).join('');
@@ -1634,6 +1734,9 @@ function renderCard(p, catId, subId, catType) {
         <button class="btn-fav ${p.featured?'active':''}" title="${p.featured?'Remover da curadoria':'Adicionar à curadoria'}" onclick="toggleFeatured('${escapeHTML(catId)}','${escapeHTML(subId)}','${escapeHTML(p.id)}')">
           ${p.featured?'★':'☆'}
         </button>
+        <button class="btn-move" title="Mover para cima" onclick="movePrompt('${escapeHTML(catId)}','${escapeHTML(subId)}','${escapeHTML(p.id)}',-1)" ${index <= 0 ? 'disabled' : ''}>↑</button>
+        <button class="btn-move" title="Mover para baixo" onclick="movePrompt('${escapeHTML(catId)}','${escapeHTML(subId)}','${escapeHTML(p.id)}',1)">↓</button>
+        <button class="btn-dup" title="Duplicar" onclick="duplicatePrompt('${escapeHTML(catId)}','${escapeHTML(subId)}','${escapeHTML(p.id)}')">⧉</button>
         <button class="btn-edit" title="Editar" onclick="openEditPrompt('${escapeHTML(catId)}','${escapeHTML(subId)}','${escapeHTML(p.id)}')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
@@ -1652,9 +1755,15 @@ function renderCard(p, catId, subId, catType) {
     <div class="card-tags">
       ${p.featured ? '<span class="tag featured-tag">★ Curadoria</span>' : ''}
       <span class="tag ${catType}">${catType==='image'?'IMG':catType==='audio'?'AUD':'VID'}</span>
+      ${p.status ? `<span class="tag status-tag">${escapeHTML(statusLabel(p.status))}</span>` : ''}
       ${tags}
     </div>
+    ${p.internalNote ? `<div class="admin-note">${escapeHTML(p.internalNote)}</div>` : ''}
   </div>`;
+}
+
+function statusLabel(status) {
+  return {testado:'Testado', novo:'Novo', revisao:'Revisão'}[status] || status;
 }
 
 function renderReference(p, catType) {
@@ -1727,9 +1836,40 @@ function flashCard(id) {
   if (card) { card.classList.add('copy-flash'); setTimeout(()=>card.classList.remove('copy-flash'), 380); }
 }
 
+function getPromptLocation(catId, subId, promptId) {
+  const cat = db.categories.find(c=>c.id===catId);
+  const sub = cat?.subcategories.find(s=>s.id===subId);
+  const index = sub ? sub.prompts.findIndex(p=>p.id===promptId) : -1;
+  return {cat, sub, index, prompt: index >= 0 ? sub.prompts[index] : null};
+}
+
+function duplicatePrompt(catId, subId, promptId) {
+  const {sub, index, prompt} = getPromptLocation(catId, subId, promptId);
+  if (!sub || !prompt) return;
+  const copy = JSON.parse(JSON.stringify(prompt));
+  copy.id = genId();
+  copy.title = copy.title + ' (cópia)';
+  copy.status = 'revisao';
+  sub.prompts.splice(index + 1, 0, copy);
+  saveDB(); renderAll();
+  toast('Prompt duplicado ✓','success');
+}
+
+function movePrompt(catId, subId, promptId, direction) {
+  const {sub, index} = getPromptLocation(catId, subId, promptId);
+  if (!sub || index < 0) return;
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= sub.prompts.length) return;
+  const [item] = sub.prompts.splice(index, 1);
+  sub.prompts.splice(nextIndex, 0, item);
+  saveDB(); renderAll();
+  toast('Ordem atualizada ✓','success');
+}
+
 // ── REFERENCES ──
 function resetReferenceUpload() {
   pendingReferenceDataUrl = '';
+  pendingReferenceFile = null;
   const fileInput = document.getElementById('formReferenceFile');
   const label = document.getElementById('referenceUploadName');
   const box = document.getElementById('referenceUploadBox');
@@ -1752,6 +1892,7 @@ function handleReferenceFile(event) {
     return;
   }
   const mediaType = file.type.split('/')[0];
+  pendingReferenceFile = file;
   document.getElementById('formReferenceType').value = mediaType;
   if (!document.getElementById('formReferenceLabel').value.trim()) {
     document.getElementById('formReferenceLabel').value = file.name;
@@ -1765,6 +1906,37 @@ function handleReferenceFile(event) {
   };
   reader.onerror = () => toast('Não consegui carregar esse arquivo', 'error');
   reader.readAsDataURL(file);
+}
+
+async function uploadReferenceFileIfNeeded(promptId) {
+  if (!pendingReferenceFile || !supabaseClient) return safeReferenceUrl(document.getElementById('formReferenceUrl').value);
+  const file = pendingReferenceFile;
+  const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const mediaType = file.type.split('/')[0] || 'file';
+  const path = `${mediaType}/${promptId}-${Date.now()}.${ext}`;
+  try {
+    const { error } = await supabaseClient.storage
+      .from('references')
+      .upload(path, file, { cacheControl: '31536000', upsert: false, contentType: file.type });
+    if (error) throw error;
+    const { data } = supabaseClient.storage.from('references').getPublicUrl(path);
+    if (data?.publicUrl) return data.publicUrl;
+  } catch(e) {
+    toast('Storage indisponível. Salvando referência leve no banco.', 'info');
+  }
+  return safeReferenceUrl(pendingReferenceDataUrl || document.getElementById('formReferenceUrl').value);
+}
+
+function updatePromptPreview() {
+  const title = document.getElementById('formTitle').value.trim() || 'Sem título';
+  const prompt = document.getElementById('formPrompt').value.trim() || 'Prompt ainda vazio';
+  const cat = document.getElementById('formCategory').value;
+  const status = document.getElementById('formStatus').value;
+  const refType = document.getElementById('formReferenceType').value || cat;
+  document.getElementById('previewTitle').textContent = title;
+  document.getElementById('previewMeta').textContent = `${cat.toUpperCase()} · ${statusLabel(status)} · ${refType || 'sem referência'}`;
+  document.getElementById('previewPrompt').textContent = prompt;
+  document.getElementById('promptPreview').classList.add('visible');
 }
 
 // ── FEATURED ──
@@ -1786,10 +1958,13 @@ function openAddPrompt(catId, subId) {
   document.getElementById('formDesc').value = '';
   document.getElementById('formPrompt').value = '';
   document.getElementById('formTags').value = '';
+  document.getElementById('formStatus').value = 'testado';
+  document.getElementById('formInternalNote').value = '';
   document.getElementById('formReferenceType').value = catId === 'audio' ? 'audio' : catId === 'image' ? 'image' : catId === 'video' ? 'video' : '';
   document.getElementById('formReferenceUrl').value = '';
   document.getElementById('formReferenceLabel').value = '';
   resetReferenceUpload();
+  document.getElementById('promptPreview').classList.remove('visible');
   const cat = db.categories.find(c=>c.id===catId);
   const sub = cat?.subcategories.find(s=>s.id===subId);
   document.getElementById('formSubcategory').value = sub ? sub.name : '';
@@ -1809,10 +1984,13 @@ function openEditPrompt(catId, subId, promptId) {
   document.getElementById('formDesc').value = p.desc;
   document.getElementById('formPrompt').value = p.prompt;
   document.getElementById('formTags').value = (p.tags||[]).join(', ');
+  document.getElementById('formStatus').value = p.status || 'testado';
+  document.getElementById('formInternalNote').value = p.internalNote || '';
   document.getElementById('formReferenceType').value = p.referenceType || '';
   document.getElementById('formReferenceUrl').value = p.referenceUrl || '';
   document.getElementById('formReferenceLabel').value = p.referenceLabel || '';
   resetReferenceUpload();
+  document.getElementById('promptPreview').classList.remove('visible');
   openModal('promptModal');
 }
 
@@ -1820,13 +1998,15 @@ function openAddCategory(catId) {
   editingPromptRef = {catId, subId: null, promptId: null};
   document.getElementById('promptModalTitle').innerHTML = 'Nova <em>Subcategoria</em>';
   document.getElementById('formCategory').value = catId;
-  ['formSubcategory','formTitle','formDesc','formPrompt','formTags','formReferenceUrl','formReferenceLabel'].forEach(id => document.getElementById(id).value = '');
+  ['formSubcategory','formTitle','formDesc','formPrompt','formTags','formReferenceUrl','formReferenceLabel','formInternalNote'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('formStatus').value = 'novo';
   document.getElementById('formReferenceType').value = catId === 'audio' ? 'audio' : catId === 'image' ? 'image' : catId === 'video' ? 'video' : '';
   resetReferenceUpload();
+  document.getElementById('promptPreview').classList.remove('visible');
   openModal('promptModal');
 }
 
-function savePrompt() {
+async function savePrompt() {
   const title = document.getElementById('formTitle').value.trim();
   const desc = document.getElementById('formDesc').value.trim();
   const prompt = document.getElementById('formPrompt').value.trim();
@@ -1835,8 +2015,10 @@ function savePrompt() {
   const tagsRaw = document.getElementById('formTags').value;
   const tags = tagsRaw.split(',').map(t=>t.trim()).filter(t=>t.length>0);
   const referenceType = document.getElementById('formReferenceType').value;
-  const referenceUrl = safeReferenceUrl(document.getElementById('formReferenceUrl').value);
+  let referenceUrl = safeReferenceUrl(document.getElementById('formReferenceUrl').value);
   const referenceLabel = document.getElementById('formReferenceLabel').value.trim();
+  const status = document.getElementById('formStatus').value || 'testado';
+  const internalNote = document.getElementById('formInternalNote').value.trim();
   if (!title || !prompt) { toast('Preencha Nome e Prompt','error'); return; }
   if (document.getElementById('formReferenceUrl').value.trim() && !referenceUrl) {
     toast('Use URL http/https ou envie um arquivo válido','error');
@@ -1844,6 +2026,8 @@ function savePrompt() {
   }
   const cat = db.categories.find(c=>c.id===catId); if (!cat) return;
   const ref = editingPromptRef;
+  const nextId = ref.promptId || genId();
+  referenceUrl = await uploadReferenceFileIfNeeded(nextId);
   if (ref.promptId) {
     const sub = cat.subcategories.find(s=>s.id===ref.subId);
     const p = sub?.prompts.find(p=>p.id===ref.promptId);
@@ -1852,11 +2036,13 @@ function savePrompt() {
     p.referenceType = referenceUrl ? referenceType : '';
     p.referenceUrl = referenceUrl;
     p.referenceLabel = referenceLabel;
+    p.status = status;
+    p.internalNote = internalNote;
     toast('Prompt atualizado ✓','success');
   } else {
     let sub = cat.subcategories.find(s=>s.id===ref.subId);
     if (!sub) { sub = {id:genId(), name:subName||'Nova Subcategoria', prompts:[]}; cat.subcategories.push(sub); }
-    sub.prompts.push({id:genId(), title, desc, prompt, featured:false, tags, referenceType: referenceUrl ? referenceType : '', referenceUrl, referenceLabel});
+    sub.prompts.push({id:nextId, title, desc, prompt, featured:false, tags, referenceType: referenceUrl ? referenceType : '', referenceUrl, referenceLabel, status, internalNote});
     toast('Prompt adicionado ✓','success');
   }
   saveDB(); closeModal('promptModal'); renderAll();
@@ -1969,6 +2155,46 @@ function saveCombo() {
   db.combos.push({id: genId(), name, icon, parts, type: currentSection || currentFilter || 'image'});
   saveDB(); closeModal('comboBuilderModal'); renderAll();
   toast('Combo criado ✓','success');
+}
+
+function buildDiagnostics() {
+  const metrics = getLibraryMetrics();
+  const backups = JSON.parse(localStorage.getItem('mtrx_backups') || '[]');
+  const withRef = db.categories.reduce((acc, cat) => acc + cat.subcategories.reduce((a2, sub) =>
+    a2 + sub.prompts.filter(p => !!p.referenceUrl).length, 0), 0);
+  const byStatus = {};
+  db.categories.forEach(cat => cat.subcategories.forEach(sub => sub.prompts.forEach(p => {
+    byStatus[p.status || 'sem status'] = (byStatus[p.status || 'sem status'] || 0) + 1;
+  })));
+  return [
+    ['Prompts', metrics.prompts],
+    ['Categorias', db.categories.length],
+    ['Subcategorias', metrics.subcategories],
+    ['Tags', metrics.tags],
+    ['Combos', metrics.combos],
+    ['Curadoria', metrics.featured],
+    ['Com referência', withRef],
+    ['Supabase', syncStatus],
+    ['Storage', supabaseClient ? 'tentativa ativa no bucket references' : 'sem cliente'],
+    ['Backups locais', backups.length],
+    ['Status', Object.entries(byStatus).map(([k,v]) => `${k}: ${v}`).join(' · ') || 'sem dados']
+  ];
+}
+
+function openDiagnostics() {
+  const rows = buildDiagnostics();
+  lastDiagnosticText = 'MTRX Library - Diagnóstico\n' + rows.map(([label, value]) => `${label}: ${value}`).join('\n');
+  document.getElementById('diagnosticReport').innerHTML = rows.map(([label, value]) =>
+    `<div class="combo-part"><div class="combo-part-label">${escapeHTML(label)}</div><div class="combo-part-text">${escapeHTML(value)}</div></div>`
+  ).join('');
+  openModal('diagnosticModal');
+}
+
+function copyDiagnostics() {
+  copyTextSafe(lastDiagnosticText,
+    () => toast('Diagnóstico copiado ✓','success'),
+    () => toast('Não consegui copiar o diagnóstico','error')
+  );
 }
 
 // ── SCROLL ──

@@ -1,0 +1,53 @@
+MTRX LIBRARY - CHECKLIST DE ENTREGA
+Data: 24/05/2026
+
+STATUS
+Sistema interno em fase final para entrega.
+Interface publica mantida limpa: entrada por Som, Imagem e Video.
+Melhorias de admin e operacao adicionadas sem poluir a tela do usuario comum.
+
+MELHORIAS APLICADAS NESTE PACOTE
+1. Upload de referencia com tentativa no Supabase Storage.
+2. Fallback para arquivo leve direto no banco quando Storage nao estiver disponivel.
+3. Preview do prompt antes de salvar.
+4. Validacao de tipo de arquivo: audio, imagem ou video.
+5. Limite para arquivo direto: ate 4MB.
+6. Campo de status: Testado, Novo, Em revisao.
+7. Nota interna visivel somente no modo admin.
+8. Busca interna considera nota interna apenas para admin.
+9. Botao duplicar prompt.
+10. Botoes para mover prompt para cima/baixo.
+11. Backup local automatico a cada salvamento.
+12. Exportacao do ultimo backup local.
+13. Backup antes de importacao JSON.
+14. Diagnostico interno com metricas do banco.
+15. Copia do diagnostico para WhatsApp/relatorio.
+16. Normalizacao automatica de dados antigos com status/nota.
+17. Referencias continuam adaptadas por midia: audio, imagem e video.
+18. Admin consegue cadastrar arquivo ou URL publica.
+19. Tela publica segue enxuta para uso interno.
+
+O QUE FICOU FORA
+- Favoritos por usuario/local, conforme solicitado.
+
+VALIDACOES NECESSARIAS ANTES DE ENTREGAR
+1. Abrir https://library.mtrx.com.br
+2. Testar Som, Imagem e Video no celular.
+3. Entrar em Admin com senha mtrx2024.
+4. Criar um prompt de teste.
+5. Enviar uma imagem pequena como referencia.
+6. Enviar um audio pequeno como referencia.
+7. Confirmar que o player toca no card.
+8. Exportar JSON.
+9. Abrir Diagnostico.
+10. Apagar o prompt de teste ou deixar como "Em revisao".
+
+STORAGE SUPABASE
+Para ativar upload publico direto no Supabase Storage, executar o arquivo:
+supabase_storage.sql
+
+Se o bucket ainda nao estiver ativo, o sistema usa fallback para arquivo leve direto no banco.
+
+OBSERVACAO OPERACIONAL
+Para videos grandes, usar URL publica como referencia.
+Para arquivos pequenos, o botao Enviar arquivo resolve direto no cadastro.

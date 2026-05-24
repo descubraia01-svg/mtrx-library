@@ -118,3 +118,24 @@ Registro.br sem tocar no dominio raiz.
 ---
 
 Atualizado em 22/05/2026 — MTRX LIBRARY v1.1
+## Pacote final para entrega - 24/05/2026
+
+Aplicado sem adicionar informacao extra na tela publica.
+
+- Upload de referencia com tentativa no Supabase Storage.
+- Fallback para arquivo leve direto no banco.
+- Preview do prompt antes de salvar.
+- Validacao de arquivo por tipo e tamanho.
+- Status interno por prompt.
+- Nota interna visivel somente no modo admin.
+- Duplicar prompt.
+- Reordenar prompt para cima/baixo.
+- Backup local automatico.
+- Exportar ultimo backup local.
+- Backup antes de importacao.
+- Diagnostico interno copiavel.
+- Busca admin incluindo nota interna.
+- Normalizacao de dados antigos.
+
+Ficou fora por decisao do projeto:
+- Favoritos por usuario/local.

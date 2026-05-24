@@ -19,8 +19,14 @@ No modo ADM da para:
 - Adicionar prompts
 - Editar prompts
 - Adicionar URL ou arquivo de referencia
+- Ver preview antes de salvar
+- Duplicar e reordenar prompts
+- Marcar status interno: Testado, Novo, Em revisao
+- Adicionar nota interna, visivel apenas no Admin
 - Marcar curadoria
 - Exportar backup JSON/TXT
+- Exportar backup local
+- Abrir diagnostico interno
 
 Observacao:
 Arquivos pequenos de audio, imagem e video podem ser enviados direto no cadastro do prompt.
